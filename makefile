@@ -47,7 +47,7 @@ executable: make_dirs $(OBJS)
 #        Generated Variables                       #
 ####################################################
 OBJDIRS = $(subst $(SRCDIR),$(OBJDIR),$(shell find $(SRCDIR) -type d))
-HEADER = $(subst .o,.h, $(subst $(OBJDIR), $(SRCDIR), $@))
+HEADER = $(subst .o,.h, $@)
 
 ####################################################
 #          Other targets                           #
