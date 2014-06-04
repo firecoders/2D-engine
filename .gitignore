@@ -1,0 +1,4 @@
+bin/
+*.swp
+executable
+.clang_complete
