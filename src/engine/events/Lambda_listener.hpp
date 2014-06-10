@@ -19,30 +19,35 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#include <iostream>
-#include <string>
-#include <memory>
+#ifndef ENGINE_EVENTS_LAMBDA_LISTENER_GUARD
+#define ENGINE_EVENTS_LAMBDA_LISTENER_GUARD
 
-#include "engine/events/Central_hub.hpp"
+#include <functional>
 
-#include "engine/events/Lambda_listener.hpp"
-#include "engine/events/Lambda_filter.hpp"
+#include "interfaces/Listener.h"
 
-int main()
-{
-    engine::events::Central_hub<std::string> hub;
+namespace engine {
+    namespace events {
+        template <typename Event_type>
+            class Lambda_listener : public Listener<Event_type> {
+                public:
+                    Lambda_listener<Event_type> (std::function<void(Event_type*)> f);
+                    void handle_event (Event_type* event);
 
-    { // queueing uses shared_ptr so it is kept inside the queue if it goes out of scope here
-        std::shared_ptr<std::string> msg = std::make_shared<std::string>("Hello World");
-        hub.queue_event(msg);
-    }
+                private:
+                    std::function<void(Event_type*)> fun;
+            };
 
-    engine::events::Lambda_filter<std::string> e { [](std::string* s){ return true; } };
-    engine::events::Lambda_listener<std::string> p { [](std::string* s){ std::cout << *s; } };
-    hub.subscribe(&p, &e);
+        template <typename Event_type>
+            Lambda_listener<Event_type>::Lambda_listener(std::function<void(Event_type*)> f) {
+                fun = f;
+            }
 
-    hub.flush_queue();
-    std::string end = "!\n";
-    hub.broadcast_event(&end);
-    return 0;
-}
+        template <typename Event_type>
+            void Lambda_listener<Event_type>::handle_event (Event_type* event) {
+                fun(event);
+            }
+    } /* namespace events */
+} /* namespace engine */
+
+#endif // ENGINE_EVENTS_LAMBDA_LISTENER_GUARD

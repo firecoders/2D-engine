@@ -19,30 +19,36 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#include <iostream>
-#include <string>
-#include <memory>
+#ifndef ENGINE_EVENTS_LAMBDA_FILTER_GUARD
+#define ENGINE_EVENTS_LAMBDA_FILTER_GUARD
 
-#include "engine/events/Central_hub.hpp"
+#include <functional>
 
-#include "engine/events/Lambda_listener.hpp"
-#include "engine/events/Lambda_filter.hpp"
+#include "interfaces/Filter.h"
 
-int main()
-{
-    engine::events::Central_hub<std::string> hub;
+namespace engine {
+    namespace events {
+        template <typename Event_type>
+            class Lambda_filter : public Filter<Event_type> {
+                public:
+                    Lambda_filter(std::function<bool(Event_type*)> f);
 
-    { // queueing uses shared_ptr so it is kept inside the queue if it goes out of scope here
-        std::shared_ptr<std::string> msg = std::make_shared<std::string>("Hello World");
-        hub.queue_event(msg);
-    }
+                    bool qualifies (Event_type* event);
 
-    engine::events::Lambda_filter<std::string> e { [](std::string* s){ return true; } };
-    engine::events::Lambda_listener<std::string> p { [](std::string* s){ std::cout << *s; } };
-    hub.subscribe(&p, &e);
+                private:
+                    std::function<bool(Event_type*)> fun;
+            };
 
-    hub.flush_queue();
-    std::string end = "!\n";
-    hub.broadcast_event(&end);
-    return 0;
-}
+        template <typename Event_type>
+            Lambda_filter<Event_type>::Lambda_filter(std::function<bool(Event_type*)> f) {
+                fun = f;
+            }
+
+        template <typename Event_type>
+            bool Lambda_filter<Event_type>::qualifies (Event_type* event) {
+                return fun(event);
+            }
+    } /* namespace events */
+} /* namespace engine */
+
+#endif // ENGINE_EVENTS_LAMBDA_FILTER_GUARD

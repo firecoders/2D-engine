@@ -19,30 +19,29 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#include <iostream>
-#include <string>
+#ifndef ENGINE_EVENTS_HUB_GUARD
+#define ENGINE_EVENTS_HUB_GUARD
+
 #include <memory>
 
-#include "engine/events/Central_hub.hpp"
+#include "Listener.h"
+#include "Filter.h"
 
-#include "engine/events/Lambda_listener.hpp"
-#include "engine/events/Lambda_filter.hpp"
+namespace engine {
+    namespace events {
+        template <typename Event_type>
+            class Hub {
+                public:
+                    virtual ~Hub () = default;
 
-int main()
-{
-    engine::events::Central_hub<std::string> hub;
+                    virtual void subscribe (Listener<Event_type>* listener, Filter<Event_type>* filter) = 0;
+                    virtual void unsubscribe (Listener<Event_type>* listener, Filter<Event_type>* filter) = 0;
 
-    { // queueing uses shared_ptr so it is kept inside the queue if it goes out of scope here
-        std::shared_ptr<std::string> msg = std::make_shared<std::string>("Hello World");
-        hub.queue_event(msg);
-    }
+                    virtual void broadcast_event (Event_type* event) = 0;
+                    virtual void queue_event (std::shared_ptr<Event_type> event) = 0;
+                    virtual void flush_queue () = 0;
+            };
+    } /* namespace events */
+} /* namespace engine */
 
-    engine::events::Lambda_filter<std::string> e { [](std::string* s){ return true; } };
-    engine::events::Lambda_listener<std::string> p { [](std::string* s){ std::cout << *s; } };
-    hub.subscribe(&p, &e);
-
-    hub.flush_queue();
-    std::string end = "!\n";
-    hub.broadcast_event(&end);
-    return 0;
-}
+#endif // ENGINE_EVENTS_HUB_GUARD
