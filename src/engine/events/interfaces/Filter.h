@@ -22,14 +22,17 @@
 #ifndef ENGINE_EVENTS_FILTER_GUARD
 #define ENGINE_EVENTS_FILTER_GUARD
 
-namespace engine {
-    namespace events {
-        template <typename Event_type>
-            class Filter {
+namespace engine
+{
+    namespace events
+    {
+        template < typename Event_type >
+            class Filter
+            {
                 public:
                     virtual ~Filter () = default;
 
-                    virtual bool qualifies (Event_type* event) = 0;
+                    virtual bool qualifies ( Event_type* event ) = 0;
             };
     } /* namespace events */
 } /* namespace engine */

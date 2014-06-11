@@ -26,27 +26,32 @@
 
 #include "interfaces/Filter.h"
 
-namespace engine {
-    namespace events {
-        template <typename Event_type>
-            class Lambda_filter : public Filter<Event_type> {
-                public:
-                    Lambda_filter(std::function<bool(Event_type*)> f);
+namespace engine
+{
+    namespace events
+    {
+        template < typename Event_type >
+            class Lambda_filter : public Filter< Event_type >
+        {
+            public:
+                Lambda_filter ( std::function< bool ( Event_type* ) > f );
 
-                    bool qualifies (Event_type* event);
+                bool qualifies ( Event_type* event );
 
-                private:
-                    std::function<bool(Event_type*)> fun;
-            };
+            private:
+                std::function< bool ( Event_type* ) > fun;
+        };
 
-        template <typename Event_type>
-            Lambda_filter<Event_type>::Lambda_filter(std::function<bool(Event_type*)> f) {
+        template < typename Event_type >
+            Lambda_filter< Event_type >::Lambda_filter ( std::function< bool ( Event_type* ) > f )
+            {
                 fun = f;
             }
 
-        template <typename Event_type>
-            bool Lambda_filter<Event_type>::qualifies (Event_type* event) {
-                return fun(event);
+        template < typename Event_type >
+            bool Lambda_filter< Event_type >::qualifies ( Event_type* event )
+            {
+                return fun ( event );
             }
     } /* namespace events */
 } /* namespace engine */

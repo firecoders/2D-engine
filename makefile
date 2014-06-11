@@ -22,9 +22,9 @@
 ####################################################
 #        Constants                                 #
 ####################################################
-CC = g++ -std=c++11 -Wall
 SRCDIR = src/
 OBJDIR = bin/
+CC = g++ -std=c++11 -Wall -I$(SRCDIR)
 
 EXECUTABLES = executable
 
@@ -35,10 +35,20 @@ default: executable
 #        Other prerequisites / dependencies        #
 ####################################################
 
+engine/events/interfaces/Hub.h: engine/events/interfaces/Listener.h \
+	engine/events/interfaces/Filter.h
+engine/events/Central_hub.hpp: engine/events/interfaces/Hub.h
+engine/events/Lambda_listener.hpp: engine/events/interfaces/Listener.h
+engine/events/Lambda_filter.hpp: engine/events/interfaces/Filter.h
+
+main.o: engine/events/Central_hub.hpp engine/events/Lambda_filter.hpp \
+	engine/events/Lambda_listener.hpp
+
 ####################################################
 #         Application definitions                  #
 ####################################################
 OBJS = main.o
+
 executable: make_dirs $(OBJS)
 	$(CC) $(addprefix $(OBJDIR), $(OBJS)) -o $@
 	@echo Done linking $@.
@@ -70,5 +80,7 @@ all: $(EXECUTABLES)
 #          vpath                                   #
 ####################################################
 vpath %.cpp $(SRCDIR)
+vpath %.o   $(OBJDIR)
 vpath %.h   $(SRCDIR)
+vpath %.hpp $(SRCDIR)
 

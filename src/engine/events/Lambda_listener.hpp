@@ -26,26 +26,32 @@
 
 #include "interfaces/Listener.h"
 
-namespace engine {
-    namespace events {
-        template <typename Event_type>
-            class Lambda_listener : public Listener<Event_type> {
-                public:
-                    Lambda_listener<Event_type> (std::function<void(Event_type*)> f);
-                    void handle_event (Event_type* event);
+namespace engine
+{
+    namespace events
+    {
+        template < typename Event_type >
+            class Lambda_listener : public Listener< Event_type >
+        {
+            public:
+                Lambda_listener ( std::function< void ( Event_type* ) > f );
 
-                private:
-                    std::function<void(Event_type*)> fun;
-            };
+                void handle_event ( Event_type* event );
 
-        template <typename Event_type>
-            Lambda_listener<Event_type>::Lambda_listener(std::function<void(Event_type*)> f) {
+            private:
+                std::function< void ( Event_type* ) > fun;
+        };
+
+        template < typename Event_type >
+            Lambda_listener< Event_type >::Lambda_listener ( std::function< void ( Event_type* ) > f )
+            {
                 fun = f;
             }
 
-        template <typename Event_type>
-            void Lambda_listener<Event_type>::handle_event (Event_type* event) {
-                fun(event);
+        template < typename Event_type >
+            void Lambda_listener< Event_type >::handle_event ( Event_type* event )
+            {
+                fun ( event );
             }
     } /* namespace events */
 } /* namespace engine */

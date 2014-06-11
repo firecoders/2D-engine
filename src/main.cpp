@@ -28,21 +28,21 @@
 #include "engine/events/Lambda_listener.hpp"
 #include "engine/events/Lambda_filter.hpp"
 
-int main()
+int main ()
 {
-    engine::events::Central_hub<std::string> hub;
+    engine::events::Central_hub< std::string > hub;
 
     { // queueing uses shared_ptr so it is kept inside the queue if it goes out of scope here
-        std::shared_ptr<std::string> msg = std::make_shared<std::string>("Hello World");
-        hub.queue_event(msg);
+        std::shared_ptr< std::string > msg = std::make_shared< std::string > ( "Hello World" );
+        hub.queue_event ( msg );
     }
 
-    engine::events::Lambda_filter<std::string> e { [](std::string* s){ return true; } };
-    engine::events::Lambda_listener<std::string> p { [](std::string* s){ std::cout << *s; } };
-    hub.subscribe(&p, &e);
+    engine::events::Lambda_filter< std::string > e { [] ( std::string* s ) { return true; } };
+    engine::events::Lambda_listener< std::string > p { [] ( std::string* s ) { std::cout << *s; } };
+    hub.subscribe ( &p, &e );
 
-    hub.flush_queue();
+    hub.flush_queue ();
     std::string end = "!\n";
-    hub.broadcast_event(&end);
+    hub.broadcast_event ( &end );
     return 0;
 }
