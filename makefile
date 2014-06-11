@@ -41,23 +41,25 @@ engine/events/Central_hub.hpp: engine/events/interfaces/Hub.h
 engine/events/Lambda_listener.hpp: engine/events/interfaces/Listener.h
 engine/events/Lambda_filter.hpp: engine/events/interfaces/Filter.h
 
+engine/gui/Window.o: engine/gui/Window.h
+engine/gui/Draw_event.o: engine/gui/Draw_event.h
+
 main.o: engine/events/Central_hub.hpp engine/events/Lambda_filter.hpp \
 	engine/events/Lambda_listener.hpp
 
 ####################################################
 #         Application definitions                  #
 ####################################################
-OBJS = main.o
+OBJS = main.o engine/gui/Window.o engine/gui/Draw_event.o
 
 executable: make_dirs $(OBJS)
-	$(CC) $(addprefix $(OBJDIR), $(OBJS)) -o $@
+	$(CC) -lsfml-graphics -lsfml-window -lsfml-system $(addprefix $(OBJDIR), $(OBJS)) -o $@
 	@echo Done linking $@.
 
 ####################################################
 #        Generated Variables                       #
 ####################################################
 OBJDIRS = $(subst $(SRCDIR),$(OBJDIR),$(shell find $(SRCDIR) -type d))
-HEADER = $(subst .o,.h, $@)
 
 ####################################################
 #          Other targets                           #
