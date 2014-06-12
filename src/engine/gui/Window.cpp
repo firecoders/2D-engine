@@ -35,10 +35,15 @@ Window::Window
 {
 }
 
-void Window::loop ()
+void Window::loop (int preferred_fps)
 {
+    std::chrono::steady_clock::time_point begin_of_frame;
+    std::chrono::steady_clock::duration high_res_second = std::chrono::seconds ( 1 );
+    std::chrono::steady_clock::duration time_each_frame = high_res_second / preferred_fps;
     while ( wrapped_window->isOpen () )
     {
+        begin_of_frame = std::chrono::steady_clock::now ();
+
         sf::Event event;
         while ( wrapped_window->pollEvent ( event ) )
         {
@@ -56,5 +61,7 @@ void Window::loop ()
         Draw_event draw_event { wrapped_window };
         draw_event_converter->handle_event ( &draw_event );
         wrapped_window->display ();
+
+        std::this_thread::sleep_until ( begin_of_frame + time_each_frame );
     }
 }

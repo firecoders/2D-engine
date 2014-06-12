@@ -23,7 +23,10 @@
 #define ENGINE_GUI_WINDOW_GUARD
 
 #include <SFML/Graphics.hpp>
+
 #include <memory>
+#include <chrono>
+#include <thread>
 
 #include "engine/events/interfaces/Listener.h"
 
@@ -43,7 +46,7 @@ namespace engine
                     std::shared_ptr< events::Listener< sf::Event > >
                 );
 
-                void loop ();
+                void loop ( int preferred_fps );
 
             private:
                 std::shared_ptr< sf::RenderWindow > wrapped_window;
