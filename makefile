@@ -43,6 +43,7 @@ engine/events/Lambda_filter.hpp: engine/events/interfaces/Filter.h
 
 engine/gui/Window.o: engine/gui/Window.h
 engine/gui/Draw_event.o: engine/gui/Draw_event.h
+engine/gui/Resource_manager.o: engine/gui/Resource_manager.h
 
 main.o: engine/events/Central_hub.hpp engine/events/Lambda_filter.hpp \
 	engine/events/Lambda_listener.hpp
@@ -50,7 +51,8 @@ main.o: engine/events/Central_hub.hpp engine/events/Lambda_filter.hpp \
 ####################################################
 #         Application definitions                  #
 ####################################################
-OBJS = main.o engine/gui/Window.o engine/gui/Draw_event.o
+OBJS = main.o engine/gui/Window.o engine/gui/Draw_event.o \
+	   engine/gui/Resource_manager.o
 
 executable: make_dirs $(OBJS)
 	$(CC) -lsfml-graphics -lsfml-window -lsfml-system $(addprefix $(OBJDIR), $(OBJS)) -o $@
