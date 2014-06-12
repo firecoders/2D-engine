@@ -22,14 +22,17 @@
 #ifndef ENGINE_EVENTS_LISTENER_GUARD
 #define ENGINE_EVENTS_LISTENER_GUARD
 
-namespace engine {
-    namespace events {
-        template <typename Event_type>
-            class Listener {
+namespace engine
+{
+    namespace events
+    {
+        template < typename Event_type >
+            class Listener
+            {
                 public:
                     virtual ~Listener () = default;
 
-                    virtual void handle_event (Event_type* event) = 0;
+                    virtual void handle_event ( Event_type* event ) = 0;
             };
     } /* namespace events */
 } /* namespace engine */

@@ -19,41 +19,48 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef ENGINE_EVENTS_LAMBDA_FILTER_GUARD
-#define ENGINE_EVENTS_LAMBDA_FILTER_GUARD
+#ifndef ENGINE_GUI_RESOURCE_MANAGER_GUARD
+#define ENGINE_GUI_RESOURCE_MANAGER_GUARD
 
-#include <functional>
+#include <map>
+#include <string>
+#include <memory>
 
-#include "interfaces/Filter.h"
+#include <iostream>
+#include <algorithm>
+#include <cstdlib>
+
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 
 namespace engine
 {
-    namespace events
+    namespace gui
     {
-        template < typename Event_type >
-            class Lambda_filter : public Filter< Event_type >
+        class Resource_manager
         {
             public:
-                Lambda_filter ( std::function< bool ( Event_type* ) > f );
+                Resource_manager ( std::string resources_path, std::string graphics_extension );
+                ~Resource_manager () = default;
 
-                bool qualifies ( Event_type* event );
+                sf::Texture& get_texture ( std::string name );
+                sf::Font& get_font ( std::string name );
 
             private:
-                std::function< bool ( Event_type* ) > fun;
+                Resource_manager ( Resource_manager const & ) = delete;
+                void operator= ( Resource_manager const & ) = delete;
+
+                std::string construct_path ( std::string name, std::string extension );
+
+                std::string resources_path;
+                std::string graphics_extension;
+                std::string fonts_extension;
+                std::string missing_placeholder;
+
+                std::map< std::string, sf::Texture > textures;
+                std::map< std::string, sf::Font > fonts;
         };
-
-        template < typename Event_type >
-            Lambda_filter< Event_type >::Lambda_filter ( std::function< bool ( Event_type* ) > f )
-            {
-                fun = f;
-            }
-
-        template < typename Event_type >
-            bool Lambda_filter< Event_type >::qualifies ( Event_type* event )
-            {
-                return fun ( event );
-            }
-    } /* namespace events */
+    } /* namespace gui */
 } /* namespace engine */
 
-#endif // ENGINE_EVENTS_LAMBDA_FILTER_GUARD
+#endif // ENGINE_GUI_RESOURCE_MANAGER_GUARD

@@ -19,22 +19,41 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef ENGINE_EVENTS_FILTER_GUARD
-#define ENGINE_EVENTS_FILTER_GUARD
+#ifndef ENGINE_GUI_WINDOW_GUARD
+#define ENGINE_GUI_WINDOW_GUARD
+
+#include <SFML/Graphics.hpp>
+
+#include <memory>
+#include <chrono>
+#include <thread>
+
+#include "engine/events/interfaces/Listener.h"
+
+#include "Draw_event.h"
 
 namespace engine
 {
-    namespace events
+    namespace gui
     {
-        template < typename Event_type >
-            class Filter
-            {
-                public:
-                    virtual ~Filter () = default;
+        class Window
+        {
+            public:
+                Window
+                (
+                    std::shared_ptr< sf::RenderWindow >,
+                    std::shared_ptr< events::Listener< Draw_event > >,
+                    std::shared_ptr< events::Listener< sf::Event > >
+                );
 
-                    virtual bool qualifies ( Event_type* event ) = 0;
-            };
-    } /* namespace events */
+                void loop ( int preferred_fps );
+
+            private:
+                std::shared_ptr< sf::RenderWindow > wrapped_window;
+                std::shared_ptr< events::Listener< Draw_event > > draw_event_converter;
+                std::shared_ptr< events::Listener< sf::Event > > sfml_event_converter;
+        };
+    } /* namespace gui */
 } /* namespace engine */
 
-#endif // ENGINE_EVENTS_FILTER_GUARD
+#endif // ENGINE_GUI_WINDOW_GUARD

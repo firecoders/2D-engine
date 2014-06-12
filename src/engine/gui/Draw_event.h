@@ -19,22 +19,28 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef ENGINE_EVENTS_FILTER_GUARD
-#define ENGINE_EVENTS_FILTER_GUARD
+#ifndef ENGINE_GUI_DRAW_EVENT_GUARD
+#define ENGINE_GUI_DRAW_EVENT_GUARD
+
+#include <SFML/Graphics.hpp>
+
+#include <memory>
 
 namespace engine
 {
-    namespace events
+    namespace gui
     {
-        template < typename Event_type >
-            class Filter
-            {
-                public:
-                    virtual ~Filter () = default;
+        class Draw_event
+        {
+            public:
+                Draw_event ( std::shared_ptr< sf::RenderTarget > render_target );
 
-                    virtual bool qualifies ( Event_type* event ) = 0;
-            };
-    } /* namespace events */
+                std::shared_ptr< sf::RenderTarget > get_target () const;
+
+            private:
+                std::shared_ptr< sf::RenderTarget > render_target;
+        };
+    } /* namespace gui */
 } /* namespace engine */
 
-#endif // ENGINE_EVENTS_FILTER_GUARD
+#endif // ENGINE_GUI_DRAW_EVENT_GUARD

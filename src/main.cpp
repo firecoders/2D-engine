@@ -19,6 +19,8 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
+#include <SFML/Graphics.hpp>
+
 #include <iostream>
 #include <string>
 #include <memory>
@@ -28,21 +30,42 @@
 #include "engine/events/Lambda_listener.hpp"
 #include "engine/events/Lambda_filter.hpp"
 
+#include "engine/gui/Window.h"
+#include "engine/gui/Draw_event.h"
+#include "engine/gui/Resource_manager.h"
+
 int main()
 {
-    engine::events::Central_hub<std::string> hub;
+    engine::gui::Resource_manager resource_manager { "res/", ".png" };
+    sf::Sprite sprite;
+    sprite.setTexture ( resource_manager.get_texture ( "splash.welcome" ) );
 
-    { // queueing uses shared_ptr so it is kept inside the queue if it goes out of scope here
-        std::shared_ptr<std::string> msg = std::make_shared<std::string>("Hello World");
-        hub.queue_event(msg);
-    }
+    std::shared_ptr< engine::events::Listener < engine::gui::Draw_event > > draw_listener =
+        std::make_shared < engine::events::Lambda_listener < engine::gui::Draw_event > >
+        (
+            [ sprite ] ( engine::gui::Draw_event* draw_event )
+            {
+                draw_event->get_target ()->draw ( sprite );
+            }
+        );
 
-    engine::events::Lambda_filter<std::string> e { [](std::string* s){ return true; } };
-    engine::events::Lambda_listener<std::string> p { [](std::string* s){ std::cout << *s; } };
-    hub.subscribe(&p, &e);
+    std::shared_ptr < engine::events::Listener < sf::Event > > sfml_listener =
+        std::make_shared < engine::events::Lambda_listener < sf::Event > >
+        (
+            [] ( sf::Event* event )
+            {
+                std::cout << "Event!" << std::endl;
+            }
+        );
 
-    hub.flush_queue();
-    std::string end = "!\n";
-    hub.broadcast_event(&end);
+    std::shared_ptr < sf::RenderWindow > render_window = std::make_shared < sf::RenderWindow >
+    (
+        sf::VideoMode { 200, 200 }, "Test window"
+    );
+
+    engine::gui::Window window { render_window, draw_listener, sfml_listener };
+
+    window.loop ( 40 );
+
     return 0;
 }

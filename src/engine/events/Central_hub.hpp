@@ -23,8 +23,8 @@
  * will run the filter multiple times when broadcasting.
  */
 
-#ifndef GUARD_ENGINE_EVENTS_CENTRAL_HUB
-#define GUARD_ENGINE_EVENTS_CENTRAL_HUB
+#ifndef ENGINE_EVENTS_CENTRAL_HUB_GUARD
+#define ENGINE_EVENTS_CENTRAL_HUB_GUARD
 
 #include <queue>
 #include <vector>
@@ -33,71 +33,81 @@
 
 #include "interfaces/Hub.h"
 
-namespace engine {
-    namespace events {
+namespace engine
+{
+    namespace events
+    {
+        template < typename Event_type >
+            struct Subscription
+            {
+                Listener< Event_type >* listener;
+                Filter< Event_type >* filter;
 
-        template <typename Event_type>
-            struct Subscription {
-                Listener<Event_type>* listener;
-                Filter<Event_type>* filter;
-
-                bool operator== (const Subscription<Event_type>& other) const {
+                bool operator== ( const Subscription< Event_type >& other ) const
+                {
                     return listener == other.listener && filter == other.filter;
                 }
             };
 
-        template <typename Event_type>
-            class Central_hub : public Hub<Event_type> {
-                public:
-                    Central_hub () = default;
-                    ~Central_hub () = default;
+        template < typename Event_type >
+            class Central_hub : public Hub< Event_type >
+        {
+            public:
+                Central_hub () = default;
+                ~Central_hub () = default;
 
-                    void subscribe (Listener<Event_type>* listener, Filter<Event_type>* filter);
-                    void unsubscribe (Listener<Event_type>* listener, Filter<Event_type>* filter);
+                void subscribe ( Listener< Event_type >* listener, Filter< Event_type >* filter );
+                void unsubscribe ( Listener< Event_type >* listener, Filter< Event_type >* filter );
 
-                    void broadcast_event (Event_type* event);
-                    void queue_event (std::shared_ptr<Event_type> event);
-                    void flush_queue ();
+                void broadcast_event ( Event_type* event );
+                void queue_event ( std::shared_ptr<Event_type> event );
+                void flush_queue ();
 
-                private:
-                    std::queue<std::shared_ptr<Event_type>> event_queue;
-                    std::vector<Subscription<Event_type>> subscriptions;
-            };
+            private:
+                std::queue< std::shared_ptr< Event_type > > event_queue;
+                std::vector< Subscription< Event_type > > subscriptions;
+        };
 
-        template <typename Event_type>
-            void Central_hub<Event_type>::subscribe(Listener<Event_type>* listener, Filter<Event_type>* filter) {
-                subscriptions.push_back(Subscription<Event_type> {listener, filter});
+        template < typename Event_type >
+            void Central_hub< Event_type >::subscribe ( Listener< Event_type >* listener, Filter< Event_type >* filter )
+            {
+                subscriptions.push_back ( Subscription< Event_type > { listener, filter } );
             }
 
-        template <typename Event_type>
-            void Central_hub<Event_type>::unsubscribe(Listener<Event_type>* listener, Filter<Event_type>* filter) {
-                subscriptions.erase(std::remove(subscriptions.begin(), subscriptions.end(),
-                            Subscription<Event_type> {listener, filter}), subscriptions.end());
+        template < typename Event_type >
+            void Central_hub< Event_type >::unsubscribe ( Listener< Event_type >* listener, Filter< Event_type >* filter )
+            {
+                subscriptions.erase ( std::remove ( subscriptions.begin (), subscriptions.end (),
+                            Subscription< Event_type > { listener, filter } ), subscriptions.end () );
             }
 
-        template <typename Event_type>
-            void Central_hub<Event_type>::broadcast_event(Event_type* event) {
-                for (auto subscription : subscriptions) {
-                    if (subscription.filter->qualifies(event))
-                        subscription.listener->handle_event(event);
+        template < typename Event_type >
+            void Central_hub< Event_type >::broadcast_event ( Event_type* event )
+            {
+                for ( auto subscription : subscriptions )
+                {
+                    if ( subscription.filter->qualifies ( event ) )
+                        subscription.listener->handle_event ( event );
                 }
             }
 
-        template <typename Event_type>
-            void Central_hub<Event_type>::queue_event(std::shared_ptr<Event_type> event) {
-                event_queue.push(event);
+        template < typename Event_type >
+            void Central_hub< Event_type >::queue_event ( std::shared_ptr< Event_type > event )
+            {
+                event_queue.push ( event );
             }
 
-        template <typename Event_type>
-            void Central_hub<Event_type>::flush_queue() {
-                while (!event_queue.empty()) {
-                    auto next = event_queue.front();
-                    event_queue.pop();
-                    broadcast_event(next.get());
+        template < typename Event_type >
+            void Central_hub< Event_type >::flush_queue ()
+            {
+                while ( !event_queue.empty () )
+                {
+                    auto next = event_queue.front ();
+                    event_queue.pop ();
+                    broadcast_event ( next.get () );
                 }
             }
     } /* namespace events */
 } /* namespace engine */
 
-#endif // GUARD_ENGINE_EVENTS_CENTRAL_HUB
-
+#endif // ENGINE_EVENTS_CENTRAL_HUB_GUARD
