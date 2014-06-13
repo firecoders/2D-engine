@@ -62,6 +62,32 @@ Type Dict_element::get_type () const
     return type;
 }
 
+bool Dict_element::operator< ( const Dict_element& other ) const
+{
+    if ( type != other.type )
+    {
+        return type < other.type;
+    }
+    switch ( type )
+    {
+        case Type::string:
+            return string () < other.string ();
+        case Type::integer:
+            return integer () < other.integer ();
+        case Type::floating:
+            return floating () < other.floating ();
+        case Type::boolean:
+            return boolean () < other.boolean ();
+        case Type::rendertarget:
+            return rendertarget () < other.rendertarget ();
+        case Type::dict:
+            return dict () < other.dict ();
+        case Type::empty:
+            return false;
+    }
+    return false;
+}
+
 const std::map< Type, std::string > strings
 {
     { Type::dict, "dict" },

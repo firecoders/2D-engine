@@ -40,7 +40,7 @@ namespace engine
         class Dict_element;
         union Value;
 
-        typedef std::map< std::string, Dict_element > Dict;
+        typedef std::map< Dict_element, Dict_element > Dict;
 
         enum class Type
         {
@@ -59,6 +59,7 @@ namespace engine
                 Dict_element ( bool boolean );
 
                 Type get_type () const;
+                bool operator< ( const Dict_element& other ) const;
 
                 std::shared_ptr< Dict > dict () const;
                 std::string& string () const;
