@@ -60,7 +60,7 @@ namespace engine
                 void unsubscribe ( Listener< Event_type >* listener, Filter< Event_type >* filter );
 
                 void broadcast_event ( Event_type* event );
-                void queue_event ( std::shared_ptr<Event_type> event );
+                void queue_event ( std::shared_ptr< Event_type > event );
                 void flush_queue ();
 
             private:
