@@ -34,22 +34,22 @@ namespace engine
             class Lambda_listener : public Listener< Event_type >
         {
             public:
-                Lambda_listener ( std::function< void ( Event_type* ) > f );
+                Lambda_listener ( std::function< void ( Event_type ) > f );
 
-                void handle_event ( Event_type* event );
+                void handle_event ( Event_type event );
 
             private:
-                std::function< void ( Event_type* ) > fun;
+                std::function< void ( Event_type ) > fun;
         };
 
         template < typename Event_type >
-            Lambda_listener< Event_type >::Lambda_listener ( std::function< void ( Event_type* ) > f )
+            Lambda_listener< Event_type >::Lambda_listener ( std::function< void ( Event_type ) > f )
             {
                 fun = f;
             }
 
         template < typename Event_type >
-            void Lambda_listener< Event_type >::handle_event ( Event_type* event )
+            void Lambda_listener< Event_type >::handle_event ( Event_type event )
             {
                 fun ( event );
             }

@@ -37,8 +37,8 @@ namespace engine
                 public:
                     virtual ~Hub () = default;
 
-                    virtual void subscribe ( Listener< Event_type >* listener, Filter< Event_type >* filter ) = 0;
-                    virtual void unsubscribe ( Listener< Event_type >* listener, Filter< Event_type >* filter ) = 0;
+                    virtual void subscribe ( Listener< Event_type* >* listener, Filter< Event_type* >* filter ) = 0;
+                    virtual void unsubscribe ( Listener< Event_type* >* listener, Filter< Event_type* >* filter ) = 0;
 
                     virtual void broadcast_event ( Event_type* event ) = 0;
                     virtual void queue_event ( std::shared_ptr< Event_type > event ) = 0;

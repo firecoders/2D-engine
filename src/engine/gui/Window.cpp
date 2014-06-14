@@ -26,8 +26,8 @@ using namespace engine::gui;
 Window::Window
 (
     std::shared_ptr< sf::RenderWindow > render_window,
-    std::shared_ptr< events::Listener< Draw_event > > draw_event_converter,
-    std::shared_ptr< events::Listener< sf::Event > > sfml_event_converter
+    std::shared_ptr< events::Listener< Draw_event* > > draw_event_converter,
+    std::shared_ptr< events::Listener< sf::Event* > > sfml_event_converter
 ) :
     wrapped_window ( render_window ),
     draw_event_converter( draw_event_converter ),
