@@ -58,7 +58,7 @@ void Window::loop (int preferred_fps)
         }
 
         wrapped_window->clear ( sf::Color::Black );
-        Draw_event draw_event { wrapped_window };
+        Draw_event draw_event { wrapped_window.get() };
         draw_event_converter->handle_event ( &draw_event );
         wrapped_window->display ();
 

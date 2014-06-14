@@ -33,12 +33,12 @@ namespace engine
         class Draw_event
         {
             public:
-                Draw_event ( std::shared_ptr< sf::RenderTarget > render_target );
+                Draw_event ( sf::RenderTarget* render_target );
 
-                std::shared_ptr< sf::RenderTarget > get_target () const;
+                sf::RenderTarget* get_target () const;
 
             private:
-                std::shared_ptr< sf::RenderTarget > render_target;
+                sf::RenderTarget* render_target;
         };
     } /* namespace gui */
 } /* namespace engine */
