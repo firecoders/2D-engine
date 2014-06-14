@@ -47,6 +47,10 @@ engine/gui/Resource_manager.o: engine/gui/Resource_manager.h
 
 engine/types/Dict.o: engine/types/Dict.h
 
+engine/converters/Draw_event_to_dict.o: \
+	engine/converters/Draw_event_to_dict.h engine/types/Dict.o \
+	engine/events/interfaces/Listener.h engine/gui/Draw_event.o
+
 main.o: engine/events/Central_hub.hpp engine/events/Lambda_filter.hpp \
 	engine/events/Lambda_listener.hpp engine/gui/Window.o \
 	engine/gui/Draw_event.o engine/gui/Resource_manager.o
@@ -55,7 +59,8 @@ main.o: engine/events/Central_hub.hpp engine/events/Lambda_filter.hpp \
 #         Application definitions                  #
 ####################################################
 OBJS = main.o engine/gui/Window.o engine/gui/Draw_event.o \
-	   engine/gui/Resource_manager.o engine/types/Dict.o
+	engine/gui/Resource_manager.o engine/types/Dict.o \
+	engine/converters/Draw_event_to_dict.o
 
 executable: make_dirs $(OBJS)
 	$(CC) -lsfml-graphics -lsfml-window -lsfml-system $(addprefix $(OBJDIR), $(OBJS)) -o $@
