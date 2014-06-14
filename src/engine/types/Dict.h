@@ -27,6 +27,9 @@
 #include <memory>
 #include <iostream>
 #include <exception>
+#include <utility>
+#include <iterator>
+#include <algorithm>
 
 namespace sf
 {
@@ -38,13 +41,12 @@ namespace engine
     namespace types
     {
         class Dict_element;
-        union Value;
 
         typedef std::map< Dict_element, Dict_element > Dict;
 
         enum class Type
         {
-            string, integer, floating, boolean, rendertarget, dict, empty
+            string, integer, uint32, floating, boolean, rendertarget, dict, empty
         };
 
         class Dict_element
@@ -52,9 +54,10 @@ namespace engine
             public:
                 Dict_element ();
                 Dict_element ( std::shared_ptr< Dict > dict );
-                Dict_element ( std::string string );
+                Dict_element ( const std::string&& string );
                 Dict_element ( sf::RenderTarget* rendertarget );
                 Dict_element ( int integer );
+                Dict_element ( uint32_t integer );
                 Dict_element ( float floating );
                 Dict_element ( bool boolean );
 
@@ -65,31 +68,19 @@ namespace engine
                 std::string& string () const;
                 sf::RenderTarget* rendertarget () const;
                 int integer () const;
+                uint32_t uint32 () const;
                 float floating () const;
                 bool boolean () const;
 
             private:
                 Type type;
-                std::shared_ptr< Value > value;
+                std::shared_ptr< void > value;
         };
 
-        union Value
-        {
-            std::shared_ptr< Dict > dict;
-            std::shared_ptr< std::string > string;
-            sf::RenderTarget* rendertarget;
-            int integer;
-            float floating;
-            bool boolean;
+        std::ostream& operator<< ( std::ostream& os, const Dict_element& element );
+        std::ostream& operator<< ( std::ostream& os, const std::pair< Dict_element, Dict_element >& key_value_pair );
+        std::ostream& operator<< ( std::ostream& os, const Dict& dict );
 
-            Value ( std::shared_ptr< Dict > dict ) { this->dict = dict; };
-            Value ( std::shared_ptr< std::string > string ) { this->string = string; };
-            Value ( sf::RenderTarget* rendertarget ) { this->rendertarget = rendertarget; };
-            Value ( int integer ) { this->integer = integer; };
-            Value ( float floating ) { this->floating = floating; };
-            Value ( bool boolean ) { this->boolean = boolean; };
-            ~Value () {};
-        };
     } /* namespace types */
 } /* namespace engine */
 
