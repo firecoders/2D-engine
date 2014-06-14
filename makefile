@@ -51,6 +51,12 @@ engine/converters/Draw_event_to_dict.o: \
 	engine/converters/Draw_event_to_dict.h engine/types/Dict.o \
 	engine/events/interfaces/Listener.h engine/gui/Draw_event.o
 
+engine/converters/Sfml_event_to_dict.o: \
+	engine/converters/Sfml_event_to_dict.h \
+	engine/converters/Sfml_enum_to_string.o \
+	engine/events/interfaces/Listener.h \
+	engine/types/Dict.o
+
 main.o: engine/events/Central_hub.hpp engine/events/Lambda_filter.hpp \
 	engine/events/Lambda_listener.hpp engine/gui/Window.o \
 	engine/gui/Draw_event.o engine/gui/Resource_manager.o
@@ -60,7 +66,9 @@ main.o: engine/events/Central_hub.hpp engine/events/Lambda_filter.hpp \
 ####################################################
 OBJS = main.o engine/gui/Window.o engine/gui/Draw_event.o \
 	engine/gui/Resource_manager.o engine/types/Dict.o \
-	engine/converters/Draw_event_to_dict.o
+	engine/converters/Draw_event_to_dict.o \
+	engine/converters/Sfml_event_to_dict.o \
+	engine/converters/Sfml_enum_to_string.o
 
 executable: make_dirs $(OBJS)
 	$(CC) -lsfml-graphics -lsfml-window -lsfml-system $(addprefix $(OBJDIR), $(OBJS)) -o $@
