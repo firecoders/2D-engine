@@ -26,8 +26,8 @@ using namespace engine::gui;
 Window::Window
 (
     std::shared_ptr< sf::RenderWindow > render_window,
-    std::shared_ptr< events::Listener< Draw_event > > draw_event_converter,
-    std::shared_ptr< events::Listener< sf::Event > > sfml_event_converter
+    std::shared_ptr< events::Listener< std::shared_ptr< Draw_event > > > draw_event_converter,
+    std::shared_ptr< events::Listener< std::shared_ptr< sf::Event > > > sfml_event_converter
 ) :
     wrapped_window ( render_window ),
     draw_event_converter( draw_event_converter ),
@@ -44,22 +44,22 @@ void Window::loop (int preferred_fps)
     {
         begin_of_frame = std::chrono::steady_clock::now ();
 
-        sf::Event event;
-        while ( wrapped_window->pollEvent ( event ) )
+        std::shared_ptr< sf::Event > event = std::make_shared < sf::Event > ();
+        while ( wrapped_window->pollEvent ( *event ) )
         {
-            if ( event.type == sf::Event::Closed )
+            if ( event->type == sf::Event::Closed )
             {
                 wrapped_window->close ();
             }
             else
             {
-                sfml_event_converter->handle_event ( &event );
+                sfml_event_converter->handle_event ( event );
             }
         }
 
         wrapped_window->clear ( sf::Color::Black );
-        Draw_event draw_event { wrapped_window };
-        draw_event_converter->handle_event ( &draw_event );
+        std::shared_ptr< Draw_event > draw_event = std::make_shared< Draw_event > ( wrapped_window.get() );
+        draw_event_converter->handle_event ( draw_event );
         wrapped_window->display ();
 
         std::this_thread::sleep_until ( begin_of_frame + time_each_frame );

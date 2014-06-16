@@ -23,12 +23,12 @@
 
 using namespace engine::gui;
 
-Draw_event::Draw_event ( std::shared_ptr< sf::RenderTarget > render_target ) :
+Draw_event::Draw_event ( sf::RenderTarget* render_target ) :
     render_target ( render_target )
 {
 }
 
-std::shared_ptr< sf::RenderTarget > Draw_event::get_target () const
+sf::RenderTarget* Draw_event::get_target () const
 {
     return render_target;
 }

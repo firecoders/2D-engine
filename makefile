@@ -1,16 +1,16 @@
 # rpg-engine, An rpg engine written in C++
 # Copyright (C) 2014 firecoders
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the "Software"),
 # to deal in the Software without restriction, including without limitation
 # the rights to use, copy, modify, merge, publish, distribute, sublicense,
 # and/or sell copies of the Software, and to permit persons to whom the
 # Software is furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included
 # in all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 # OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -47,6 +47,16 @@ engine/gui/Resource_manager.o: engine/gui/Resource_manager.h
 
 engine/types/Dict.o: engine/types/Dict.h
 
+engine/converters/Draw_event_to_dict.o: \
+	engine/converters/Draw_event_to_dict.h engine/types/Dict.o \
+	engine/events/interfaces/Listener.h engine/gui/Draw_event.o
+
+engine/converters/Sfml_event_to_dict.o: \
+	engine/converters/Sfml_event_to_dict.h \
+	engine/converters/Sfml_enum_to_string.o \
+	engine/events/interfaces/Listener.h \
+	engine/types/Dict.o
+
 main.o: engine/events/Central_hub.hpp engine/events/Lambda_filter.hpp \
 	engine/events/Lambda_listener.hpp engine/gui/Window.o \
 	engine/gui/Draw_event.o engine/gui/Resource_manager.o
@@ -55,7 +65,10 @@ main.o: engine/events/Central_hub.hpp engine/events/Lambda_filter.hpp \
 #         Application definitions                  #
 ####################################################
 OBJS = main.o engine/gui/Window.o engine/gui/Draw_event.o \
-	   engine/gui/Resource_manager.o engine/types/Dict.o
+	engine/gui/Resource_manager.o engine/types/Dict.o \
+	engine/converters/Draw_event_to_dict.o \
+	engine/converters/Sfml_event_to_dict.o \
+	engine/converters/Sfml_enum_to_string.o
 
 executable: make_dirs $(OBJS)
 	$(CC) -lsfml-graphics -lsfml-window -lsfml-system $(addprefix $(OBJDIR), $(OBJS)) -o $@

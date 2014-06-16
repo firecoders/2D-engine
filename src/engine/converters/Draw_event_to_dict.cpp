@@ -19,22 +19,18 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef ENGINE_EVENTS_FILTER_GUARD
-#define ENGINE_EVENTS_FILTER_GUARD
+#include "Draw_event_to_dict.h"
 
-namespace engine
+using namespace engine::converters;
+
+Draw_event_to_dict::Draw_event_to_dict ( events::Listener< std::shared_ptr< types::Dict > >* listener ) :
+    listener ( listener )
+{}
+
+void Draw_event_to_dict::handle_event ( std::shared_ptr < gui::Draw_event > draw_event )
 {
-    namespace events
-    {
-        template < typename Event_type >
-            class Filter
-            {
-                public:
-                    virtual ~Filter () = default;
-
-                    virtual bool qualifies ( Event_type event ) = 0;
-            };
-    } /* namespace events */
-} /* namespace engine */
-
-#endif // ENGINE_EVENTS_FILTER_GUARD
+    std::shared_ptr< engine::types::Dict > converted = std::make_shared< engine::types::Dict > ();
+    converted->insert ( { std::string ( "type" ), std::string ( "converted engine::gui::Draw_event" ) } );
+    converted->insert ( { std::string ( "rendertarget" ), draw_event->get_target () } );
+    listener->handle_event ( converted );
+}

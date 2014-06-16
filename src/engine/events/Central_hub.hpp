@@ -56,29 +56,29 @@ namespace engine
                 Central_hub () = default;
                 ~Central_hub () = default;
 
-                void subscribe ( Listener< Event_type >* listener, Filter< Event_type >* filter );
-                void unsubscribe ( Listener< Event_type >* listener, Filter< Event_type >* filter );
+                void subscribe ( Listener< Event_type* >* listener, Filter< Event_type* >* filter );
+                void unsubscribe ( Listener< Event_type* >* listener, Filter< Event_type* >* filter );
 
                 void broadcast_event ( Event_type* event );
-                void queue_event ( std::shared_ptr<Event_type> event );
+                void queue_event ( std::shared_ptr< Event_type > event );
                 void flush_queue ();
 
             private:
                 std::queue< std::shared_ptr< Event_type > > event_queue;
-                std::vector< Subscription< Event_type > > subscriptions;
+                std::vector< Subscription< Event_type* > > subscriptions;
         };
 
         template < typename Event_type >
-            void Central_hub< Event_type >::subscribe ( Listener< Event_type >* listener, Filter< Event_type >* filter )
+            void Central_hub< Event_type >::subscribe ( Listener< Event_type* >* listener, Filter< Event_type* >* filter )
             {
-                subscriptions.push_back ( Subscription< Event_type > { listener, filter } );
+                subscriptions.push_back ( Subscription< Event_type* > { listener, filter } );
             }
 
         template < typename Event_type >
-            void Central_hub< Event_type >::unsubscribe ( Listener< Event_type >* listener, Filter< Event_type >* filter )
+            void Central_hub< Event_type >::unsubscribe ( Listener< Event_type* >* listener, Filter< Event_type* >* filter )
             {
                 subscriptions.erase ( std::remove ( subscriptions.begin (), subscriptions.end (),
-                            Subscription< Event_type > { listener, filter } ), subscriptions.end () );
+                            Subscription< Event_type* > { listener, filter } ), subscriptions.end () );
             }
 
         template < typename Event_type >

@@ -32,7 +32,7 @@ namespace engine
                 public:
                     virtual ~Listener () = default;
 
-                    virtual void handle_event ( Event_type* event ) = 0;
+                    virtual void handle_event ( Event_type event ) = 0;
             };
     } /* namespace events */
 } /* namespace engine */

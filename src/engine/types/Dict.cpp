@@ -29,33 +29,39 @@ Dict_element::Dict_element () :
 
 Dict_element::Dict_element ( std::shared_ptr< Dict > dict ) :
     type ( Type::dict ),
-    value ( std::make_shared< Value > ( dict ) )
+    value ( dict )
 {}
 
-Dict_element::Dict_element ( std::string string ) :
+Dict_element::Dict_element ( const std::string&& string ) :
     type ( Type::string ),
-    value ( std::make_shared< Value > ( std::make_shared< std::string > ( string ) ) )
+    value ( std::make_shared< std::string > ( string ) )
 {}
 
 Dict_element::Dict_element ( sf::RenderTarget* rendertarget ) :
     type ( Type::rendertarget ),
-    value ( std::make_shared< Value > ( rendertarget ) )
+    value ( std::make_shared< sf::RenderTarget* > ( rendertarget ) )
 {}
 
 Dict_element::Dict_element ( int integer ) :
     type ( Type::integer ),
-    value ( std::make_shared< Value > ( integer ) )
+    value ( std::make_shared< int > ( integer ) )
+{}
+
+Dict_element::Dict_element ( uint32_t uint32 ) :
+    type ( Type::uint32 ),
+    value ( std::make_shared< uint32_t > ( uint32 ) )
 {}
 
 Dict_element::Dict_element ( float floating ) :
     type ( Type::floating ),
-    value ( std::make_shared< Value > ( floating ) )
+    value ( std::make_shared< float > ( floating ) )
 {}
 
 Dict_element::Dict_element ( bool boolean ) :
     type ( Type::boolean ),
-    value ( std::make_shared< Value > ( boolean ) )
+    value ( std::make_shared< bool > ( boolean ) )
 {}
+
 
 Type Dict_element::get_type () const
 {
@@ -72,6 +78,8 @@ bool Dict_element::operator< ( const Dict_element& other ) const
     {
         case Type::string:
             return string () < other.string ();
+        case Type::uint32:
+            return uint32 () < other.uint32 ();
         case Type::integer:
             return integer () < other.integer ();
         case Type::floating:
@@ -94,6 +102,7 @@ const std::map< Type, std::string > strings
     { Type::rendertarget, "rendertarget" },
     { Type::string, "string" },
     { Type::integer, "integer" },
+    { Type::uint32, "uint32" },
     { Type::floating, "floating" },
     { Type::boolean, "boolean" },
     { Type::empty, "empty" }
@@ -108,38 +117,99 @@ void check_type ( Type actual, Type check )
     }
 }
 
+
 std::shared_ptr< Dict > Dict_element::dict () const
 {
     check_type ( type, Type::dict );
-    return value->dict;
+    return std::shared_ptr< Dict > ( ( Dict* ) value.get() );
 }
 
 std::string& Dict_element::string () const
 {
     check_type ( type, Type::string );
-    return * (value->string);
+    return * ( ( std::string* ) value.get () );
 }
 
 sf::RenderTarget* Dict_element::rendertarget () const
 {
     check_type ( type, Type::rendertarget );
-    return value->rendertarget;
+    return * ( ( sf::RenderTarget** ) value.get () );
 }
+
 
 int Dict_element::integer () const
 {
     check_type ( type, Type::integer );
-    return value->integer;
+    return * ( ( int* ) value.get () );
+}
+
+
+uint32_t Dict_element::uint32 () const
+{
+    check_type ( type, Type::uint32 );
+    return * ( ( uint32_t* ) value.get () );
 }
 
 float Dict_element::floating () const
 {
     check_type ( type, Type::floating );
-    return value->floating;
+    return * ( ( float* ) value.get () );
 }
 
 bool Dict_element::boolean () const
 {
     check_type ( type, Type::boolean );
-    return value->boolean;
+    return * ( ( bool* ) value.get () );
 }
+
+
+namespace engine
+{
+    namespace types
+    {
+        std::ostream& operator<< ( std::ostream& os, const Dict_element& element )
+        {
+            os << "(" << strings.at ( element.get_type () ) << ") ";
+            switch ( element.get_type () )
+            {
+                case Type::string:
+                    os << element.string ();
+                    break;
+                case Type::uint32:
+                    os << element.uint32 ();
+                    break;
+                case Type::integer:
+                    os << element.integer ();
+                    break;
+                case Type::floating:
+                    os << element.floating ();
+                    break;
+                case Type::boolean:
+                    os << element.boolean ();
+                    break;
+                case Type::rendertarget:
+                    os << element.rendertarget ();
+                    break;
+                case Type::dict:
+                    os << element.dict ();
+                    break;
+                case Type::empty:
+                    break;
+            }
+            return os;
+        }
+
+        std::ostream& operator<< ( std::ostream& os, const std::pair< Dict_element, Dict_element >& key_value_pair )
+        {
+            os << key_value_pair.first << " -> " << key_value_pair.second;
+            return os;
+        }
+
+        std::ostream& operator<< ( std::ostream& os, const Dict& dict )
+        {
+            std::copy ( dict.begin(), dict.end(),
+                    std::ostream_iterator< std::pair< Dict_element, Dict_element > > ( os, "\n" ) );
+            return os;
+        }
+    } /* namespace types */
+} /* namespace engine */

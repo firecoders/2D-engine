@@ -19,22 +19,34 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef ENGINE_EVENTS_FILTER_GUARD
-#define ENGINE_EVENTS_FILTER_GUARD
+#ifndef ENGINE_CONVERTERS_SFML_EVENT_TO_DICT_GUARD
+#define ENGINE_CONVERTERS_SFML_EVENT_TO_DICT_GUARD
+
+#include <memory>
+#include <string>
+
+#include <SFML/Window.hpp>
+
+#include "engine/events/interfaces/Listener.h"
+#include "engine/types/Dict.h"
+
+#include "engine/converters/Sfml_enum_to_string.h"
 
 namespace engine
 {
-    namespace events
+    namespace converters
     {
-        template < typename Event_type >
-            class Filter
-            {
-                public:
-                    virtual ~Filter () = default;
+        class Sfml_event_to_dict : public events::Listener < std::shared_ptr< sf::Event > >
+        {
+            public:
+                Sfml_event_to_dict ( events::Listener< std::shared_ptr< types::Dict > >* listener );
 
-                    virtual bool qualifies ( Event_type event ) = 0;
-            };
-    } /* namespace events */
+                void handle_event ( std::shared_ptr< sf::Event > sfml_event );
+
+            private:
+                events::Listener< std::shared_ptr< types::Dict > >* listener;
+        };
+    } /* namespace converters */
 } /* namespace engine */
 
-#endif // ENGINE_EVENTS_FILTER_GUARD
+#endif // ENGINE_CONVERTERS_SFML_EVENT_TO_DICT_GUARD

@@ -42,16 +42,16 @@ namespace engine
                 Window
                 (
                     std::shared_ptr< sf::RenderWindow >,
-                    std::shared_ptr< events::Listener< Draw_event > >,
-                    std::shared_ptr< events::Listener< sf::Event > >
+                    std::shared_ptr< events::Listener< std::shared_ptr< Draw_event > > > draw_event_converter,
+                    std::shared_ptr< events::Listener< std::shared_ptr< sf::Event > > > sfml_event_converter
                 );
 
                 void loop ( int preferred_fps );
 
             private:
                 std::shared_ptr< sf::RenderWindow > wrapped_window;
-                std::shared_ptr< events::Listener< Draw_event > > draw_event_converter;
-                std::shared_ptr< events::Listener< sf::Event > > sfml_event_converter;
+                std::shared_ptr< events::Listener< std::shared_ptr< Draw_event > > > draw_event_converter;
+                std::shared_ptr< events::Listener< std::shared_ptr< sf::Event > > > sfml_event_converter;
         };
     } /* namespace gui */
 } /* namespace engine */
