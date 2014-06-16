@@ -40,19 +40,19 @@ int main()
     sf::Sprite sprite;
     sprite.setTexture ( resource_manager.get_texture ( "splash.welcome" ) );
 
-    std::shared_ptr< engine::events::Listener < engine::gui::Draw_event* > > draw_listener =
-        std::make_shared < engine::events::Lambda_listener < engine::gui::Draw_event* > >
+    std::shared_ptr< engine::events::Listener < std::shared_ptr< engine::gui::Draw_event > > > draw_listener =
+        std::make_shared < engine::events::Lambda_listener < std::shared_ptr< engine::gui::Draw_event > > >
         (
-            [ sprite ] ( engine::gui::Draw_event* draw_event )
+            [ sprite ] ( std::shared_ptr< engine::gui::Draw_event > draw_event )
             {
                 draw_event->get_target ()->draw ( sprite );
             }
         );
 
-    std::shared_ptr < engine::events::Listener < sf::Event* > > sfml_listener =
-        std::make_shared < engine::events::Lambda_listener < sf::Event* > >
+    std::shared_ptr < engine::events::Listener < std::shared_ptr< sf::Event > > > sfml_listener =
+        std::make_shared < engine::events::Lambda_listener < std::shared_ptr< sf::Event > > >
         (
-            [] ( sf::Event* event )
+            [] ( std::shared_ptr< sf::Event > event )
             {
                 std::cout << "Event!" << std::endl;
             }
