@@ -24,12 +24,12 @@
 ####################################################
 SRCDIR = src/
 OBJDIR = bin/
-CC = g++ -std=c++11 -Wall -I$(SRCDIR)
+CC = g++ -std=c++11 -Wall -I$(SRCDIR) -fdiagnostics-color=auto
 
-EXECUTABLES = executable
+LIBRARY = libengine.a
 
 # Default target
-default: executable
+default: $(LIBRARY)
 
 ####################################################
 #        Other prerequisites / dependencies        #
@@ -64,14 +64,15 @@ main.o: engine/events/Central_hub.hpp engine/events/Lambda_filter.hpp \
 ####################################################
 #         Application definitions                  #
 ####################################################
-OBJS = main.o engine/gui/Window.o engine/gui/Draw_event.o \
+OBJS = engine/gui/Window.o engine/gui/Draw_event.o \
 	engine/gui/Resource_manager.o engine/types/Dict.o \
 	engine/converters/Draw_event_to_dict.o \
 	engine/converters/Sfml_event_to_dict.o \
 	engine/converters/Sfml_enum_to_string.o
+# main.o
 
-executable: make_dirs $(OBJS)
-	$(CC) -lsfml-graphics -lsfml-window -lsfml-system $(addprefix $(OBJDIR), $(OBJS)) -o $@
+$(LIBRARY): make_dirs $(OBJS)
+	ar rcs $@ $(addprefix $(OBJDIR), $(OBJS))
 	@echo Done linking $@.
 
 ####################################################
@@ -88,12 +89,12 @@ OBJDIRS = $(subst $(SRCDIR),$(OBJDIR),$(shell find $(SRCDIR) -type d))
 	$(CC) -c $(filter %.cpp, $^) -o $(OBJDIR)$@
 
 clean:
-	@-rm -r bin $(EXECUTABLES)
+	-rm -r bin $(LIBRARY)
 
 make_dirs:
 	@mkdir -p $(OBJDIRS)
 
-all: $(EXECUTABLES)
+all: $(LIBRARY)
 
 
 ####################################################
