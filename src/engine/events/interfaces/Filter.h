@@ -32,7 +32,8 @@ namespace engine
                 public:
                     virtual ~Filter () = default;
 
-                    virtual bool qualifies ( Event_type event ) = 0;
+                    virtual bool qualifies  ( Event_type event ) = 0;
+                    virtual bool is_expired () = 0;
             };
     } /* namespace events */
 } /* namespace engine */

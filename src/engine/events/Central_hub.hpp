@@ -71,7 +71,8 @@ namespace engine
         template < typename Event_type >
             void Central_hub< Event_type >::subscribe ( Listener< Event_type* >* listener, Filter< Event_type* >* filter )
             {
-                subscriptions.push_back ( Subscription< Event_type* > { listener, filter } );
+                if ( !filter->is_expired () )
+                    subscriptions.push_back ( Subscription< Event_type* > { listener, filter } );
             }
 
         template < typename Event_type >
@@ -84,10 +85,16 @@ namespace engine
         template < typename Event_type >
             void Central_hub< Event_type >::broadcast_event ( Event_type* event )
             {
-                for ( auto subscription : subscriptions )
+                for ( auto it = subscriptions.begin (); it != subscriptions.end (); )
                 {
-                    if ( subscription.filter->qualifies ( event ) )
-                        subscription.listener->handle_event ( event );
+                    if ( it->filter->is_expired () )
+                        subscriptions.erase ( it );
+                    else
+                    {
+                        if ( it->filter->qualifies ( event ) )
+                            it->listener->handle_event ( event );
+                        ++it;
+                    }
                 }
             }
 

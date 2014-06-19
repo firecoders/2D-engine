@@ -30,29 +30,44 @@ namespace engine
 {
     namespace events
     {
+        const auto expire_never = [] () { return false; };
+
         template < typename Event_type >
             class Lambda_filter : public Filter< Event_type >
         {
             public:
-                Lambda_filter ( std::function< bool ( Event_type ) > f );
+                Lambda_filter ( std::function< bool ( Event_type ) > qualifies_f,
+                                std::function< bool () > is_expired_f = expire_never );
 
-                bool qualifies ( Event_type event );
+                bool qualifies  ( Event_type event );
+                bool is_expired ();
 
             private:
-                std::function< bool ( Event_type ) > fun;
+                std::function< bool ( Event_type ) > qualifies_function;
+                std::function< bool () > is_expired_function;
         };
 
         template < typename Event_type >
-            Lambda_filter< Event_type >::Lambda_filter ( std::function< bool ( Event_type ) > f )
+            Lambda_filter< Event_type >::Lambda_filter
+                ( std::function< bool ( Event_type ) > qualifies_f, 
+                  std::function< bool () > is_expired_f)
             {
-                fun = f;
+                qualifies_function  = qualifies_f;
+                is_expired_function = is_expired_f;
             }
 
         template < typename Event_type >
             bool Lambda_filter< Event_type >::qualifies ( Event_type event )
             {
-                return fun ( event );
+                return qualifies_function ( event );
             }
+
+        template < typename Event_type >
+            bool Lambda_filter< Event_type >::is_expired ()
+            {
+                return is_expired_function ();
+            }
+
     } /* namespace events */
 } /* namespace engine */
 
