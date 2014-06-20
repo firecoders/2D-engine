@@ -19,13 +19,13 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef ENGINE_EVNETS_LISTENER_HUB_ADAPTER_GUARD
-#define ENGINE_EVNETS_LISTENER_HUB_ADAPTER_GUARD
+#ifndef ENGINE_ADAPTERS_LISTENER_HUB_GUARD
+#define ENGINE_ADAPTERS_LISTENER_HUB_GUARD
 
 #include <memory>
 
-#include "interfaces/Hub.h"
-#include "interfaces/Listener.h"
+#include "engine/events/interfaces/Hub.h"
+#include "engine/events/interfaces/Listener.h"
 
 namespace magic
 {
@@ -58,60 +58,62 @@ namespace magic
         {
             typedef Event_type value;
         };
-} /* namespace template_magic */
+} /* namespace magic */
 
 namespace engine
 {
-    namespace events
+    namespace adapters
     {
         template
             <
                 typename Event_type,
                 bool use_queue = magic::Is_shared_ptr< Event_type >::value
             >
-            class Listener_hub_adapter : public Listener< Event_type >
+            class Listener_to_hub : public events::Listener< Event_type >
             {
                 public:
-                    Listener_hub_adapter ( Hub< typename magic::Remove_pointer< Event_type >::value >* wrapped );
+                    Listener_to_hub ( events::Hub< typename magic::Remove_pointer< Event_type >::value >* wrapped );
 
                     void handle_event ( Event_type event );
 
                 private:
-                    Hub< typename magic::Remove_pointer< Event_type >::value >* wrapped;
+                    events::Hub< typename magic::Remove_pointer< Event_type >::value >* wrapped;
             };
 
         template < typename Event_type >
-            class Listener_hub_adapter< Event_type, true > : public Listener< Event_type >
+            class Listener_to_hub< Event_type, true > : public events::Listener< Event_type >
             {
                 public:
-                    Listener_hub_adapter ( Hub< typename magic::Remove_pointer< Event_type >::value >* wrapped );
+                    Listener_to_hub ( events::Hub< typename magic::Remove_pointer< Event_type >::value >* wrapped );
 
                     void handle_event ( Event_type event );
 
                 private:
-                    Hub< typename magic::Remove_pointer< Event_type >::value >* wrapped;
+                    events::Hub< typename magic::Remove_pointer< Event_type >::value >* wrapped;
             };
 
         template < typename Event_type, bool use_queue >
-            Listener_hub_adapter< Event_type, use_queue >::Listener_hub_adapter ( Hub< typename magic::Remove_pointer< Event_type >::value >* wrapped ) :
+            Listener_to_hub< Event_type, use_queue >::Listener_to_hub
+            ( events::Hub< typename magic::Remove_pointer< Event_type >::value >* wrapped ) :
                 wrapped ( wrapped )
         {}
 
 
         template < typename Event_type, bool use_queue >
-            void Listener_hub_adapter< Event_type, use_queue >::handle_event ( Event_type event )
+            void Listener_to_hub< Event_type, use_queue >::handle_event ( Event_type event )
             {
                 wrapped->broadcast_event ( event );
             }
 
 
         template < typename Event_type >
-            Listener_hub_adapter< Event_type, true >::Listener_hub_adapter ( Hub< typename magic::Remove_pointer< Event_type >::value >* wrapped ) :
+            Listener_to_hub< Event_type, true >::Listener_to_hub
+            ( events::Hub< typename magic::Remove_pointer< Event_type >::value >* wrapped ) :
                 wrapped ( wrapped )
         {}
 
         template < typename Event_type >
-            void Listener_hub_adapter< Event_type, true >::handle_event ( Event_type event )
+            void Listener_to_hub< Event_type, true >::handle_event ( Event_type event )
             {
                 wrapped->queue_event ( event );
             }
@@ -119,4 +121,4 @@ namespace engine
     } /* namespace events */
 } /* namespace engine */
 
-#endif // ENGINE_EVNETS_LISTENER_HUB_ADAPTER_GUARD
+#endif // ENGINE_ADAPTERS_LISTENER_HUB_GUARD
