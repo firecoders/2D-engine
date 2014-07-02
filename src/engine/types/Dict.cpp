@@ -29,7 +29,7 @@ Dict_element::Dict_element () :
 
 Dict_element::Dict_element ( std::shared_ptr< Dict > dict ) :
     type ( Type::dict ),
-    value ( dict )
+    value ( std::make_shared< std::shared_ptr< Dict > > ( dict ) )
 {}
 
 Dict_element::Dict_element ( const std::string&& string ) :
@@ -121,7 +121,7 @@ void check_type ( Type actual, Type check )
 std::shared_ptr< Dict > Dict_element::dict () const
 {
     check_type ( type, Type::dict );
-    return std::shared_ptr< Dict > ( ( Dict* ) value.get() );
+    return * ( ( std::shared_ptr< Dict >* ) value.get () );
 }
 
 std::string& Dict_element::string () const
