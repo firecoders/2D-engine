@@ -23,6 +23,7 @@
 #define ENGINE_TYPES_DICT_GUARD
 
 #include <map>
+#include <vector>
 #include <string>
 #include <memory>
 #include <iostream>
@@ -46,7 +47,7 @@ namespace engine
 
         enum class Type
         {
-            string, integer, uint32, floating, boolean, rendertarget, dict, empty
+            string, integer, uint32, floating, boolean, rendertarget, dict, vector, empty
         };
 
         class Dict_element
@@ -54,6 +55,7 @@ namespace engine
             public:
                 Dict_element ();
                 Dict_element ( std::shared_ptr< Dict > dict );
+                Dict_element ( std::shared_ptr< std::vector< Dict_element > > vector );
                 Dict_element ( const std::string&& string );
                 Dict_element ( sf::RenderTarget* rendertarget );
                 Dict_element ( int integer );
@@ -65,6 +67,7 @@ namespace engine
                 bool operator< ( const Dict_element& other ) const;
 
                 std::shared_ptr< Dict > dict () const;
+                std::shared_ptr< std::vector< Dict_element > > vector () const;
                 std::string& string () const;
                 sf::RenderTarget* rendertarget () const;
                 int integer () const;
@@ -79,6 +82,7 @@ namespace engine
 
         std::ostream& operator<< ( std::ostream& os, const Dict_element& element );
         std::ostream& operator<< ( std::ostream& os, const std::pair< Dict_element, Dict_element >& key_value_pair );
+        std::ostream& operator<< ( std::ostream& os, const std::vector< Dict_element >& vector );
         std::ostream& operator<< ( std::ostream& os, const Dict& dict );
 
     } /* namespace types */
