@@ -1,4 +1,4 @@
-# rpg-engine, An rpg engine written in C++
+# 2D-engine, A C++ library wrapping sfml, to be used for 2D games
 # Copyright (C) 2014 firecoders
 #
 # Permission is hereby granted, free of charge, to any person obtaining
