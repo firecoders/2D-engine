@@ -65,6 +65,7 @@ namespace engine
 
                 Type get_type () const;
                 bool operator< ( const Dict_element& other ) const;
+                bool operator== ( const Dict_element& other ) const;
 
                 std::shared_ptr< Dict > dict () const;
                 std::shared_ptr< std::vector< Dict_element > > vector () const;

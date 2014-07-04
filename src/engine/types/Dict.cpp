@@ -103,6 +103,36 @@ bool Dict_element::operator< ( const Dict_element& other ) const
     return false;
 }
 
+bool Dict_element::operator== ( const Dict_element& other ) const
+{
+    if ( type != other.type )
+    {
+        return false;
+    }
+    switch ( type )
+    {
+        case Type::string:
+            return string () == other.string ();
+        case Type::uint32:
+            return uint32 () == other.uint32 ();
+        case Type::integer:
+            return integer () == other.integer ();
+        case Type::floating:
+            return floating () == other.floating ();
+        case Type::boolean:
+            return boolean () == other.boolean ();
+        case Type::rendertarget:
+            return rendertarget () == other.rendertarget ();
+        case Type::dict:
+            return dict () == other.dict ();
+        case Type::vector:
+            return vector () == other.vector ();
+        case Type::empty:
+            return true;
+    }
+    return false;
+}
+
 const std::map< Type, std::string > strings
 {
     { Type::dict, "dict" },
