@@ -123,7 +123,7 @@ $(LIBRARY): make_dirs $(OBJS)
 #        Generated Variables                       #
 ####################################################
 OBJDIRS = $(subst $(SRCDIR),$(OBJDIR),$(shell find $(SRCDIR) -type d))
-TESTS = $(shell find $(TEST_DIR) -type f -regex .*.cpp)
+TEST_OBJECTS = $(subst .cpp,.o,$(shell find $(TEST_DIR) -type f -regex .*.cpp))
 
 ####################################################
 #          Googletest integration                  #
@@ -134,12 +134,12 @@ GTEST_URL = https://googletest.googlecode.com/files/gtest-1.7.0.zip
 TEST_DIR = tests
 TEST_EXEC_NAME = test
 
-$(TEST_EXEC_NAME): $(TESTS) dep/bin/libgtest.a libengine.a
-	$(CC) -isystem $(GTEST_DIR)/include -pthread \
-		-Isrc $^ -o $@
+$(TEST_EXEC_NAME): libengine.a dep/bin/libgtest.a $(TEST_OBJECTS)
+	$(CC) -pthread $^ -o $@
+	@echo Done linking $@
 
-test/%.o: test/%.cpp
-	$(CC) -c $(filter %.cpp, $^) -o $@
+$(TEST_DIR)/%.o: libengine.a dep/bin/libgtest.a $(TEST_DIR)/%.cpp
+	$(CC) -isystem $(GTEST_DIR)/include -Isrc -c $(filter %.cpp, $^) -o $@
 
 $(GTEST_DIR)/%:
 	@echo "Downloading googletest from $(GTEST_URL)"
@@ -159,7 +159,7 @@ dep/bin/gtest_main.o: $(GTEST_DIR)/src/gtest_main.cc
 
 dep/bin/libgtest.a: dep/bin/gtest-all.o dep/bin/gtest_main.o
 	ar -rv $@ $^
-	@echo "Done linking $@"
+	@echo Done linking $@
 
 ####################################################
 #          Other targets                           #
@@ -176,7 +176,7 @@ dep/bin/libgtest.a: dep/bin/gtest-all.o dep/bin/gtest_main.o
 	$(CC) -c $(filter %.cpp, $^) -o $(OBJDIR)$@
 
 clean:
-	-rm -r bin $(LIBRARY)
+	-rm -r bin $(LIBRARY) $(TEST_OBJECTS)
 
 make_dirs:
 	@mkdir -p $(OBJDIRS)

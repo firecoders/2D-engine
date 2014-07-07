@@ -29,7 +29,12 @@ Dict_element::Dict_element () :
 
 Dict_element::Dict_element ( std::shared_ptr< Dict > dict ) :
     type ( Type::dict ),
-    value ( dict )
+    value ( std::make_shared< std::shared_ptr< Dict > > ( dict ) )
+{}
+
+Dict_element::Dict_element ( std::shared_ptr< std::vector< Dict_element > > vector ) :
+    type ( Type::vector ),
+    value ( std::make_shared< std::shared_ptr< std::vector< Dict_element > > > ( vector ) )
 {}
 
 Dict_element::Dict_element ( const std::string&& string ) :
@@ -90,8 +95,40 @@ bool Dict_element::operator< ( const Dict_element& other ) const
             return rendertarget () < other.rendertarget ();
         case Type::dict:
             return dict () < other.dict ();
+        case Type::vector:
+            return vector () < other.vector ();
         case Type::empty:
             return false;
+    }
+    return false;
+}
+
+bool Dict_element::operator== ( const Dict_element& other ) const
+{
+    if ( type != other.type )
+    {
+        return false;
+    }
+    switch ( type )
+    {
+        case Type::string:
+            return string () == other.string ();
+        case Type::uint32:
+            return uint32 () == other.uint32 ();
+        case Type::integer:
+            return integer () == other.integer ();
+        case Type::floating:
+            return floating () == other.floating ();
+        case Type::boolean:
+            return boolean () == other.boolean ();
+        case Type::rendertarget:
+            return rendertarget () == other.rendertarget ();
+        case Type::dict:
+            return dict () == other.dict ();
+        case Type::vector:
+            return vector () == other.vector ();
+        case Type::empty:
+            return true;
     }
     return false;
 }
@@ -99,6 +136,7 @@ bool Dict_element::operator< ( const Dict_element& other ) const
 const std::map< Type, std::string > strings
 {
     { Type::dict, "dict" },
+    { Type::vector, "vector" },
     { Type::rendertarget, "rendertarget" },
     { Type::string, "string" },
     { Type::integer, "integer" },
@@ -121,7 +159,13 @@ void check_type ( Type actual, Type check )
 std::shared_ptr< Dict > Dict_element::dict () const
 {
     check_type ( type, Type::dict );
-    return std::shared_ptr< Dict > ( ( Dict* ) value.get() );
+    return * ( ( std::shared_ptr< Dict >* ) value.get () );
+}
+
+std::shared_ptr< std::vector< Dict_element > > Dict_element::vector () const
+{
+    check_type ( type, Type::vector );
+    return * ( ( std::shared_ptr< std::vector< Dict_element > >* ) value.get () );
 }
 
 std::string& Dict_element::string () const
@@ -136,13 +180,11 @@ sf::RenderTarget* Dict_element::rendertarget () const
     return * ( ( sf::RenderTarget** ) value.get () );
 }
 
-
 int Dict_element::integer () const
 {
     check_type ( type, Type::integer );
     return * ( ( int* ) value.get () );
 }
-
 
 uint32_t Dict_element::uint32 () const
 {
@@ -193,6 +235,9 @@ namespace engine
                 case Type::dict:
                     os << element.dict ();
                     break;
+                case Type::vector:
+                    os << element.vector ();
+                    break;
                 case Type::empty:
                     break;
             }
@@ -202,6 +247,15 @@ namespace engine
         std::ostream& operator<< ( std::ostream& os, const std::pair< Dict_element, Dict_element >& key_value_pair )
         {
             os << key_value_pair.first << " -> " << key_value_pair.second;
+            return os;
+        }
+
+        std::ostream& operator<< ( std::ostream& os, const std::vector< Dict_element >& vector )
+        {
+            os << "[ ";
+            std::copy ( vector.begin(), vector.end(),
+                    std::ostream_iterator< Dict_element > ( os, ", " ) );
+            os << "]";
             return os;
         }
 
