@@ -134,11 +134,11 @@ GTEST_URL = https://googletest.googlecode.com/files/gtest-1.7.0.zip
 TEST_DIR = tests
 TEST_EXEC_NAME = test
 
-$(TEST_EXEC_NAME): libengine.a dep/bin/libgtest.a $(TEST_OBJECTS)
+$(TEST_EXEC_NAME): $(TEST_OBJECTS) libengine.a dep/bin/libgtest.a
 	$(CC) -pthread $^ -o $@
 	@echo Done linking $@
 
-$(TEST_DIR)/%.o: libengine.a dep/bin/libgtest.a $(TEST_DIR)/%.cpp
+$(TEST_DIR)/%.o: $(TEST_DIR)/%.cpp libengine.a dep/bin/libgtest.a
 	$(CC) -isystem $(GTEST_DIR)/include -Isrc -c $(filter %.cpp, $^) -o $@
 
 $(GTEST_DIR)/%:
