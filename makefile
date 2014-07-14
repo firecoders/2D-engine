@@ -176,7 +176,7 @@ dep/bin/libgtest.a: dep/bin/gtest-all.o dep/bin/gtest_main.o
 	$(CC) -c $(filter %.cpp, $^) -o $(OBJDIR)$@
 
 clean:
-	-rm -r bin $(LIBRARY) $(TEST_OBJECTS)
+	-rm -r bin $(LIBRARY) $(TEST_OBJECTS) $(TEST_EXEC_NAME)
 
 make_dirs:
 	@mkdir -p $(OBJDIRS)
