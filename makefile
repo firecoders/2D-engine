@@ -37,6 +37,10 @@ default: $(LIBRARY)
 
 # events
 
+engine/events/Broadcaster.hpp: \
+	engine/events/interfaces/Receiver.h \
+	engine/events/interfaces/Subscribable.h
+
 # gui
 
 # engine/gui/Window.h: \
