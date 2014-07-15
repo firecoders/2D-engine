@@ -41,6 +41,9 @@ engine/events/Broadcaster.hpp: \
 	engine/events/interfaces/Receiver.h \
 	engine/events/interfaces/Subscribable.h
 
+engine/events/Lambda_node.hpp: \
+	engine/events/Broadcaster.hpp
+
 # gui
 
 # engine/gui/Window.h: \
