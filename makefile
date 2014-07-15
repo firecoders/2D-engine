@@ -37,37 +37,11 @@ default: $(LIBRARY)
 
 # events
 
-src/engine/events/interfaces/Hub.h: \
-	engine/events/interfaces/Listener.h \
-	engine/events/interfaces/Filter.h
-
-engine/events/Central_hub.hpp: \
-	engine/events/interfaces/Hub.h
-
-engine/events/Hub_forwarder.hpp: \
-	engine/events/interfaces/Hub.h
-
-engine/events/Lambda_listener.hpp: \
-	engine/events/interfaces/Listener.h
-
-engine/events/Lambda_filter.hpp: \
-	engine/events/interfaces/Filter.h
-
-# adapters
-
-engine/adapters/Listener_to_hub.hpp: \
-	engine/events/interfaces/Hub.h \
-	engine/events/interfaces/Listener.h
-
-engine/adapters/Shared_to_raw_listener.hpp: \
-	engine/events/interfaces/Listener.h
-
 # gui
 
-engine/gui/Window.h: \
-	engine/events/interfaces/Listener.h \
+# engine/gui/Window.h: \
 	engine/gui/Draw_event.h
-engine/gui/Window.o: \
+# engine/gui/Window.o: \
 	engine/gui/Window.h
 
 # engine/gui/Draw_event.h: none
@@ -80,22 +54,20 @@ engine/gui/Resource_manager.o: \
 
 # converters
 
-engine/converters/Sfml_event_to_dict.h: \
-	engine/events/interfaces/Listener.h \
+# engine/converters/Sfml_event_to_dict.h: \
 	engine/types/Dict.h \
 	engine/converters/Sfml_enum_to_string.h
-engine/converters/Sfml_event_to_dict.o: \
+# engine/converters/Sfml_event_to_dict.o: \
 	engine/converters/Sfml_event_to_dict.h
 
 # engine/converters/Sfml_enum_to_string.h: none
 engine/converters/Sfml_enum_to_string.o: \
 	engine/converters/Sfml_enum_to_string.h
 
-engine/converters/Draw_event_to_dict.h: \
-	engine/events/interfaces/Listener.h \
+# engine/converters/Draw_event_to_dict.h: \
 	engine/gui/Draw_event.h \
 	engine/types/Dict.h
-engine/converters/Draw_event_to_dict.o: \
+# engine/converters/Draw_event_to_dict.o: \
 	engine/converters/Draw_event_to_dict.h
 
 # types
@@ -109,11 +81,11 @@ engine/types/Dict.o: \
 ####################################################
 OBJS = engine/gui/Resource_manager.o \
 	engine/gui/Draw_event.o \
-	engine/gui/Window.o \
+	engine/types/Dict.o #\
 	engine/converters/Sfml_enum_to_string.o \
 	engine/converters/Sfml_event_to_dict.o \
 	engine/converters/Draw_event_to_dict.o \
-	engine/types/Dict.o
+	engine/gui/Window.o
 
 $(LIBRARY): make_dirs $(OBJS)
 	ar rcs $@ $(addprefix $(OBJDIR), $(OBJS))
