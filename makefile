@@ -46,10 +46,11 @@ engine/events/Lambda_node.hpp: \
 
 # gui
 
-# engine/gui/Window.h: \
+engine/gui/Window.h: \
 	engine/gui/Draw_event.h
-# engine/gui/Window.o: \
-	engine/gui/Window.h
+engine/gui/Window.o: \
+	engine/gui/Window.h \
+	engine/events/interfaces/Receiver.h
 
 # engine/gui/Draw_event.h: none
 engine/gui/Draw_event.o: \
@@ -93,7 +94,7 @@ OBJS = engine/gui/Resource_manager.o \
 	engine/types/Dict.o \
 	engine/converters/Draw_event_to_dict.o \
 	engine/converters/Sfml_enum_to_string.o \
-	engine/converters/Sfml_event_to_dict.o #\
+	engine/converters/Sfml_event_to_dict.o \
 	engine/gui/Window.o
 
 $(LIBRARY): make_dirs $(OBJS)
