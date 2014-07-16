@@ -61,20 +61,22 @@ engine/gui/Resource_manager.o: \
 
 # converters
 
-# engine/converters/Sfml_event_to_dict.h: \
+engine/converters/Sfml_event_to_dict.h: \
 	engine/types/Dict.h \
+	engine/events/interfaces/Receiver.h \
 	engine/converters/Sfml_enum_to_string.h
-# engine/converters/Sfml_event_to_dict.o: \
+engine/converters/Sfml_event_to_dict.o: \
 	engine/converters/Sfml_event_to_dict.h
 
 # engine/converters/Sfml_enum_to_string.h: none
 engine/converters/Sfml_enum_to_string.o: \
 	engine/converters/Sfml_enum_to_string.h
 
-# engine/converters/Draw_event_to_dict.h: \
+engine/converters/Draw_event_to_dict.h: \
 	engine/gui/Draw_event.h \
+	engine/events/interfaces/Receiver.h \
 	engine/types/Dict.h
-# engine/converters/Draw_event_to_dict.o: \
+engine/converters/Draw_event_to_dict.o: \
 	engine/converters/Draw_event_to_dict.h
 
 # types
@@ -88,10 +90,10 @@ engine/types/Dict.o: \
 ####################################################
 OBJS = engine/gui/Resource_manager.o \
 	engine/gui/Draw_event.o \
-	engine/types/Dict.o #\
-	engine/converters/Sfml_enum_to_string.o \
-	engine/converters/Sfml_event_to_dict.o \
+	engine/types/Dict.o \
 	engine/converters/Draw_event_to_dict.o \
+	engine/converters/Sfml_enum_to_string.o \
+	engine/converters/Sfml_event_to_dict.o #\
 	engine/gui/Window.o
 
 $(LIBRARY): make_dirs $(OBJS)

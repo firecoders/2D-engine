@@ -27,7 +27,7 @@
 
 #include <SFML/Window.hpp>
 
-#include "engine/events/interfaces/Listener.h"
+#include "engine/events/interfaces/Receiver.h"
 #include "engine/types/Dict.h"
 
 #include "engine/converters/Sfml_enum_to_string.h"
@@ -36,15 +36,15 @@ namespace engine
 {
     namespace converters
     {
-        class Sfml_event_to_dict : public events::Listener < std::shared_ptr< sf::Event > >
+        class Sfml_event_to_dict : public events::Receiver < std::shared_ptr < sf::Event > >
         {
             public:
-                Sfml_event_to_dict ( events::Listener< std::shared_ptr< types::Dict > >* listener );
+                Sfml_event_to_dict ( events::Receiver < std::shared_ptr < types::Dict > >* receiver );
 
-                void handle_event ( std::shared_ptr< sf::Event > sfml_event );
+                void receive ( std::shared_ptr < sf::Event > sfml_event );
 
             private:
-                events::Listener< std::shared_ptr< types::Dict > >* listener;
+                events::Receiver< std::shared_ptr < types::Dict > >* receiver;
         };
     } /* namespace converters */
 } /* namespace engine */
