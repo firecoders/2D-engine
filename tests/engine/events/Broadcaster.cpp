@@ -23,6 +23,7 @@
 
 #include "Test_receiver.hpp"
 #include "engine/events/Broadcaster.hpp"
+#include "engine/events/Lambda_receiver.hpp"
 #include <memory>
 
 using namespace engine::events;
@@ -42,148 +43,116 @@ TEST ( engineEventsBroadcaster, generalTest )
     EXPECT_EQ ( test_receiver->result, 5 );
 }
 
-template < typename Event_type >
-    class Auto_unsubscribe_receiver : public Receiver < Event_type >
-    {
-        public:
-            Auto_unsubscribe_receiver ( Broadcaster < Event_type >* broadcaster ) : broadcaster ( broadcaster ) {}
-
-            virtual void receive ( Event_type e )
-            {
-                broadcaster->unsubscribe ( this );
-            }
-
-        private:
-            Broadcaster < Event_type >* broadcaster;
-    };
-
 TEST ( engineEventsBroadcaster, unsubscribeOnReceive )
 {
     Broadcaster < int > test_broadcaster;
-    std::shared_ptr < Auto_unsubscribe_receiver < int > > auto_unsubscribe_receiver
-        = std::make_shared < Auto_unsubscribe_receiver < int > > ( &test_broadcaster );
-    test_broadcaster.subscribe ( auto_unsubscribe_receiver );
+
+    std::shared_ptr < Lambda_receiver < int > > test_lambda_receiver;
+    auto unsubscribe_on_receive = [ & ] ( int i ) { test_broadcaster.unsubscribe ( test_lambda_receiver.get () ); };
+    test_lambda_receiver = std::make_shared < Lambda_receiver < int > > ( unsubscribe_on_receive );
+
+    test_broadcaster.subscribe ( test_lambda_receiver );
     test_broadcaster.receive ( 1 );
 }
-
-template < typename Event_type >
-    class Subscribe_receiver : public Receiver < Event_type >
-    {
-        public:
-            Subscribe_receiver ( Broadcaster < Event_type >* broadcaster, std::shared_ptr < Test_receiver < Event_type > > subscribe_receiver )
-                : broadcaster ( broadcaster ),
-                  subscribe_receiver ( subscribe_receiver )
-            {}
-
-            virtual void receive ( Event_type e )
-            {
-                broadcaster->subscribe ( subscribe_receiver );
-            }
-
-        private:
-            Broadcaster < Event_type >* broadcaster;
-            std::shared_ptr < Test_receiver < Event_type > > subscribe_receiver;
-    };
 
 TEST ( engineEventsBroadcaster, subscribeOnReceive )
 {
     Broadcaster < int > test_broadcaster;
     std::shared_ptr < Test_receiver < int > > test_receiver = std::make_shared < Test_receiver < int > > ();
-    std::shared_ptr < Subscribe_receiver < int > > subscribe_receiver
-        = std::make_shared < Subscribe_receiver < int > > ( &test_broadcaster, test_receiver );
-    test_broadcaster.subscribe ( subscribe_receiver );
+
+    std::shared_ptr < Lambda_receiver < int > > test_lambda_receiver;
+    auto subscribe_on_receive = [ & ] ( int i ) { test_broadcaster.subscribe ( test_receiver ); };
+    test_lambda_receiver = std::make_shared < Lambda_receiver < int > > ( subscribe_on_receive );
+
+    test_broadcaster.subscribe ( test_lambda_receiver );
     test_broadcaster.receive ( 1 );
+
+    test_broadcaster.receive ( 2 );
+    EXPECT_EQ ( test_receiver->result, 2 );
 }
-
-template < typename Event_type >
-    class Auto_receive_receiver : public Receiver < Event_type >
-    {
-        public:
-            Auto_receive_receiver ( Broadcaster < Event_type >* broadcaster ) : broadcaster ( broadcaster ), sent ( false ) {}
-
-            virtual void receive ( Event_type e )
-            {
-                if ( !sent )
-                {
-                    broadcaster->receive ( 1 );
-                    sent = true;
-                }
-            }
-
-        private:
-            Broadcaster < Event_type >* broadcaster;
-            bool sent;
-    };
 
 TEST ( engineEventsBroadcaster, sendOnReceive )
 {
     Broadcaster < int > test_broadcaster;
-    std::shared_ptr < Auto_receive_receiver < int > > auto_receive_receiver
-        = std::make_shared < Auto_receive_receiver < int > > ( &test_broadcaster );
-    test_broadcaster.subscribe ( auto_receive_receiver );
+
+    bool sent = false;
+    std::shared_ptr < Lambda_receiver < int > > test_lambda_receiver;
+    auto send_on_receive = [ & ] ( int i ) {
+        if ( ! sent )
+        {
+            test_broadcaster.receive ( 2 );
+            sent = true;
+        }
+    };
+    test_lambda_receiver = std::make_shared < Lambda_receiver < int > > ( send_on_receive );
+
+    int count = 1;
+    std::shared_ptr < Lambda_receiver < int > > test_lambda_receiver_2;
+    auto test_order = [ & ] ( int i ) {
+        EXPECT_EQ ( count, i );
+        count++;
+    };
+    test_lambda_receiver_2 = std::make_shared < Lambda_receiver < int > > ( test_order );
+
+    test_broadcaster.subscribe ( test_lambda_receiver );
+    test_broadcaster.subscribe ( test_lambda_receiver_2 );
     test_broadcaster.receive ( 1 );
 }
-
-template < typename Event_type >
-    class Auto_unsubscribe_and_receive_receiver : public Receiver < Event_type >
-    {
-        public:
-            Auto_unsubscribe_and_receive_receiver ( Broadcaster < Event_type >* broadcaster ) : broadcaster ( broadcaster ) {}
-
-            virtual void receive ( Event_type e )
-            {
-                result = e;
-                broadcaster->receive ( 2 );
-                broadcaster->unsubscribe ( this );
-            }
-
-            Event_type result;
-
-        private:
-            Broadcaster < Event_type >* broadcaster;
-    };
 
 TEST ( engineEventsBroadcaster, unsubscribeOverReceive )
 {
     Broadcaster < int > test_broadcaster;
-    std::shared_ptr < Auto_unsubscribe_and_receive_receiver < int > > auto_unsubscribe_and_receive_receiver
-        = std::make_shared < Auto_unsubscribe_and_receive_receiver < int > > ( &test_broadcaster );
-    test_broadcaster.subscribe ( auto_unsubscribe_and_receive_receiver );
-    test_broadcaster.receive ( 1 );
-    EXPECT_EQ ( auto_unsubscribe_and_receive_receiver->result, 1 );
-}
 
-template < typename Event_type >
-    class Auto_subscribe_and_receive_receiver : public Receiver < Event_type >
-    {
-        public:
-            Auto_subscribe_and_receive_receiver ( Broadcaster < Event_type >* broadcaster, std::shared_ptr < Receiver < Event_type > > target )
-                : broadcaster ( broadcaster ), sent ( false ), target ( target )
-                {}
-
-            virtual void receive ( Event_type e )
-            {
-                if ( !sent )
-                {
-                    broadcaster->receive ( 2 );
-                    broadcaster->subscribe ( target );
-                    sent = true;
-                }
-            }
-
-        private:
-            Broadcaster < Event_type >* broadcaster;
-            bool sent;
-            std::shared_ptr < Receiver < Event_type > > target;
+    int result = 0;
+    std::shared_ptr < Lambda_receiver < int > > test_lambda_receiver;
+    auto send_and_unsubscribe = [ & ] ( int i ) {
+        result = i;
+        test_broadcaster.receive ( 2 );
+        test_broadcaster.unsubscribe ( test_lambda_receiver.get () );
     };
+    test_lambda_receiver = std::make_shared < Lambda_receiver < int > > ( send_and_unsubscribe );
+
+    test_broadcaster.subscribe ( test_lambda_receiver );
+    test_broadcaster.receive ( 1 );
+    EXPECT_EQ ( result, 1 );
+}
 
 TEST ( engineEventsBroadcaster, subscribeOverReceive )
 {
     Broadcaster < int > test_broadcaster;
     std::shared_ptr < Test_receiver < int > > test_receiver = std::make_shared < Test_receiver < int > > ();
-    std::shared_ptr < Auto_subscribe_and_receive_receiver < int > > auto_subscribe_and_receive_receiver
-        = std::make_shared < Auto_subscribe_and_receive_receiver < int > > ( &test_broadcaster, test_receiver );
-    test_broadcaster.subscribe ( auto_subscribe_and_receive_receiver );
+
+    bool sent = false;
+    std::shared_ptr < Lambda_receiver < int > > test_lambda_receiver;
+    auto send_and_subscribe = [ & ] ( int i ) {
+        if ( !sent )
+        {
+            sent = true;
+            test_broadcaster.receive ( 2 );
+            test_broadcaster.subscribe ( test_receiver );
+        }
+    };
+    test_lambda_receiver = std::make_shared < Lambda_receiver < int > > ( send_and_subscribe );
+
+    test_broadcaster.subscribe ( test_lambda_receiver );
     test_broadcaster.receive ( 1 );
     EXPECT_EQ ( test_receiver->result, 2 );
 }
+
+TEST ( engineEventsBroadcaster, duplicateSubscription )
+{
+    Broadcaster < int > test_broadcaster;
+
+    int access_count = 0;
+    auto count_accesses = [ & ] ( int i ) {
+        access_count ++;
+    };
+    std::shared_ptr < Lambda_receiver < int > > test_lambda_receiver;
+    test_lambda_receiver = std::make_shared < Lambda_receiver < int > > ( count_accesses );
+
+    test_broadcaster.subscribe ( test_lambda_receiver );
+    test_broadcaster.subscribe ( test_lambda_receiver );
+    test_broadcaster.receive ( 1 );
+    EXPECT_EQ ( access_count, 1 );
+}
+
