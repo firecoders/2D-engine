@@ -47,6 +47,9 @@ engine/events/Lambda_node.hpp: \
 engine/events/Receiver_forwarder.hpp: \
 	engine/events/interfaces/Receiver.h
 
+engine/events/Lambda_receiver.hpp: \
+	engine/events/Broadcaster.hpp
+
 # gui
 
 engine/gui/Window.h: \
