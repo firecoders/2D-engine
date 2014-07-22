@@ -22,21 +22,21 @@
 #include <gtest/gtest.h>
 
 #include "Test_receiver.hpp"
-#include "engine/events/Lambda_node.hpp"
+#include "engine/events/Filter_node.hpp"
 #include <memory>
 
 using namespace engine::events;
 
-TEST ( engineEventsLambdaNode, generalTest )
+TEST ( engineEventsFilterNode, generalTest )
 {
-    Lambda_node < int > test_lambda_node ( [] ( int e ) { return e % 2 == 0; } );
+    Filter_node < int > test_filter_node ( [] ( int e ) { return e % 2 == 0; } );
     std::shared_ptr < Test_receiver < int > > test_receiver = std::make_shared < Test_receiver < int > > ();
-    test_lambda_node.subscribe ( test_receiver );
+    test_filter_node.subscribe ( test_receiver );
 
-    test_lambda_node.receive ( 2 );
-    EXPECT_EQ ( test_receiver->result, 2 );
+    test_filter_node.receive ( 2 );
+    EXPECT_EQ ( 2, test_receiver->result );
 
-    test_lambda_node.receive ( 3 );
-    EXPECT_NE ( test_receiver->result, 3 );
-    EXPECT_EQ ( test_receiver->result, 2 );
+    test_filter_node.receive ( 3 );
+    EXPECT_NE ( 3, test_receiver->result );
+    EXPECT_EQ ( 2, test_receiver->result );
 }

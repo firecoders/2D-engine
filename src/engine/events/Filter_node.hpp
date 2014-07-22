@@ -19,8 +19,8 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef ENGINE_EVENTS_LAMBDA_NODE_GUARD
-#define ENGINE_EVENTS_LAMBDA_NODE_GUARD
+#ifndef ENGINE_EVENTS_FILTER_NODE_GUARD
+#define ENGINE_EVENTS_FILTER_NODE_GUARD
 
 #include <memory>
 #include <functional>
@@ -34,13 +34,16 @@ namespace engine
     namespace events
     {
         template < typename Event_type >
-            class Lambda_node : public Subscribable < Event_type >, public Receiver < Event_type >
+            class Filter_node : public Subscribable < Event_type >, public Receiver < Event_type >
             {
                 public:
-                    Lambda_node ( std::function < bool ( Event_type ) > );
-                    virtual void subscribe ( std::shared_ptr < Receiver < Event_type > > );
-                    virtual void unsubscribe ( Receiver < Event_type >* );
-                    virtual void receive ( Event_type );
+                    Filter_node ( std::function < bool ( Event_type ) > qualifies );
+
+                    virtual void subscribe ( std::shared_ptr < Receiver < Event_type > > subscribe );
+                    virtual void unsubscribe ( Receiver < Event_type >* unsubscribe );
+                    virtual void receive ( Event_type event );
+
+                    virtual ~Filter_node () = default;
 
                 private:
                     std::function < bool ( Event_type ) > qualifies_function;
@@ -48,24 +51,24 @@ namespace engine
             };
 
         template < typename Event_type >
-            Lambda_node < Event_type >::Lambda_node ( std::function < bool ( Event_type ) > qualifies ) :
-            qualifies_function ( qualifies )
+            Filter_node < Event_type >::Filter_node ( std::function < bool ( Event_type ) > qualifies ) :
+                qualifies_function ( qualifies )
             {}
 
         template < typename Event_type >
-            void Lambda_node < Event_type >::subscribe ( std::shared_ptr < Receiver < Event_type > > subscriber )
+            void Filter_node < Event_type >::subscribe ( std::shared_ptr < Receiver < Event_type > > subscriber )
             {
                 broadcaster.subscribe ( subscriber );
             }
 
         template < typename Event_type >
-            void Lambda_node < Event_type >::unsubscribe ( Receiver < Event_type >* unsubscriber )
+            void Filter_node < Event_type >::unsubscribe ( Receiver < Event_type >* unsubscriber )
             {
                 broadcaster.unsubscribe ( unsubscriber );
             }
 
         template < typename Event_type >
-            void Lambda_node < Event_type >::receive ( Event_type e )
+            void Filter_node < Event_type >::receive ( Event_type e )
             {
                 if ( qualifies_function ( e ) )
                     broadcaster.receive ( e );
@@ -74,4 +77,4 @@ namespace engine
     } /* namespace events */
 } /* namespace engine */
 
-#endif // ENGINE_EVENTS_LAMBDA_NODE_GUARD
+#endif // ENGINE_EVENTS_FILTER_NODE_GUARD
