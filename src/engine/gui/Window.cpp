@@ -25,9 +25,9 @@ using namespace engine::gui;
 
 Window::Window
 (
-    std::shared_ptr< sf::RenderWindow > render_window,
-    std::shared_ptr< events::Listener< std::shared_ptr< Draw_event > > > draw_event_converter,
-    std::shared_ptr< events::Listener< std::shared_ptr< sf::Event > > > sfml_event_converter
+    std::shared_ptr < sf::RenderWindow > render_window,
+    std::shared_ptr < events::Receiver < std::shared_ptr< Draw_event > > > draw_event_converter,
+    std::shared_ptr < events::Receiver < std::shared_ptr< sf::Event > > > sfml_event_converter
 ) :
     wrapped_window ( render_window ),
     draw_event_converter( draw_event_converter ),
@@ -53,13 +53,13 @@ void Window::loop (int preferred_fps)
             }
             else
             {
-                sfml_event_converter->handle_event ( event );
+                sfml_event_converter->receive ( event );
             }
         }
 
         wrapped_window->clear ( sf::Color::Black );
         std::shared_ptr< Draw_event > draw_event = std::make_shared< Draw_event > ( wrapped_window.get() );
-        draw_event_converter->handle_event ( draw_event );
+        draw_event_converter->receive ( draw_event );
         wrapped_window->display ();
 
         std::this_thread::sleep_until ( begin_of_frame + time_each_frame );

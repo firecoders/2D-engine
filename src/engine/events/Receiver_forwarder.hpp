@@ -19,41 +19,50 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef ENGINE_EVENTS_LAMBDA_LISTENER_GUARD
-#define ENGINE_EVENTS_LAMBDA_LISTENER_GUARD
+#ifndef ENGINE_EVENTS_RECEIVER_FORWARDER_GUARD
+#define ENGINE_EVENTS_RECEIVER_FORWARDER_GUARD
 
-#include <functional>
+#include <memory>
 
-#include "interfaces/Listener.h"
+#include "interfaces/Receiver.h"
+#include "Broadcaster.hpp"
 
 namespace engine
 {
     namespace events
     {
         template < typename Event_type >
-            class Lambda_listener : public Listener< Event_type >
-        {
-            public:
-                Lambda_listener ( std::function< void ( Event_type ) > f );
+            class Receiver_forwarder : public Receiver < Event_type >
+            {
+                public:
+                    Receiver_forwarder ( std::shared_ptr < Receiver < Event_type > > target );
 
-                void handle_event ( Event_type event );
+                    virtual void receive ( Event_type event );
+                    void redirect ( std::shared_ptr < Receiver < Event_type > > target );
 
-            private:
-                std::function< void ( Event_type ) > fun;
-        };
+                    virtual ~Receiver_forwarder () = default;
+                private:
+                    std::shared_ptr < Receiver < Event_type > > target;
+            };
 
         template < typename Event_type >
-            Lambda_listener< Event_type >::Lambda_listener ( std::function< void ( Event_type ) > f )
+            Receiver_forwarder < Event_type >::Receiver_forwarder ( std::shared_ptr < Receiver < Event_type > > target ) :
+                target ( target )
+            {}
+
+        template < typename Event_type >
+            void Receiver_forwarder < Event_type >::receive ( Event_type event )
             {
-                fun = f;
+                if ( target != nullptr )
+                    target->receive ( event );
             }
 
         template < typename Event_type >
-            void Lambda_listener< Event_type >::handle_event ( Event_type event )
+            void Receiver_forwarder < Event_type >::redirect ( std::shared_ptr < Receiver < Event_type > > target )
             {
-                fun ( event );
+                this->target = target;
             }
     } /* namespace events */
 } /* namespace engine */
 
-#endif // ENGINE_EVENTS_LAMBDA_LISTENER_GUARD
+#endif // ENGINE_EVENTS_RECEIVER_FORWARDER_GUARD

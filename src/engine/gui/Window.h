@@ -28,7 +28,7 @@
 #include <chrono>
 #include <thread>
 
-#include "engine/events/interfaces/Listener.h"
+#include "engine/events/interfaces/Receiver.h"
 
 #include "Draw_event.h"
 
@@ -41,17 +41,17 @@ namespace engine
             public:
                 Window
                 (
-                    std::shared_ptr< sf::RenderWindow >,
-                    std::shared_ptr< events::Listener< std::shared_ptr< Draw_event > > > draw_event_converter,
-                    std::shared_ptr< events::Listener< std::shared_ptr< sf::Event > > > sfml_event_converter
+                    std::shared_ptr < sf::RenderWindow >,
+                    std::shared_ptr < events::Receiver < std::shared_ptr < Draw_event > > > draw_event_converter,
+                    std::shared_ptr < events::Receiver < std::shared_ptr < sf::Event > > > sfml_event_converter
                 );
 
                 void loop ( int preferred_fps );
 
             private:
-                std::shared_ptr< sf::RenderWindow > wrapped_window;
-                std::shared_ptr< events::Listener< std::shared_ptr< Draw_event > > > draw_event_converter;
-                std::shared_ptr< events::Listener< std::shared_ptr< sf::Event > > > sfml_event_converter;
+                std::shared_ptr < sf::RenderWindow > wrapped_window;
+                std::shared_ptr < events::Receiver < std::shared_ptr < Draw_event > > > draw_event_converter;
+                std::shared_ptr < events::Receiver < std::shared_ptr < sf::Event > > > sfml_event_converter;
         };
     } /* namespace gui */
 } /* namespace engine */

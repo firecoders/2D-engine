@@ -19,56 +19,41 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef ENGINE_EVENTS_LAMBDA_FILTER_GUARD
-#define ENGINE_EVENTS_LAMBDA_FILTER_GUARD
+#ifndef ENGINE_EVENTS_LAMBDA_RECEIVER_GUARD
+#define ENGINE_EVENTS_LAMBDA_RECEIVER_GUARD
 
 #include <functional>
 
-#include "interfaces/Filter.h"
+#include "interfaces/Receiver.h"
 
 namespace engine
 {
     namespace events
     {
-        const auto expire_never = [] () { return false; };
-
         template < typename Event_type >
-            class Lambda_filter : public Filter< Event_type >
-        {
-            public:
-                Lambda_filter ( std::function< bool ( Event_type ) > qualifies_f,
-                                std::function< bool () > is_expired_f = expire_never );
-
-                bool qualifies  ( Event_type event );
-                bool is_expired ();
-
-            private:
-                std::function< bool ( Event_type ) > qualifies_function;
-                std::function< bool () > is_expired_function;
-        };
-
-        template < typename Event_type >
-            Lambda_filter< Event_type >::Lambda_filter
-                ( std::function< bool ( Event_type ) > qualifies_f, 
-                  std::function< bool () > is_expired_f)
+            class Lambda_receiver : public Receiver < Event_type >
             {
-                qualifies_function  = qualifies_f;
-                is_expired_function = is_expired_f;
-            }
+                public:
+                    Lambda_receiver ( std::function < void ( Event_type ) > on_receive );
+
+                    virtual void receive ( Event_type event );
+
+                    virtual ~Lambda_receiver () = default;
+                private:
+                    std::function < void ( Event_type ) > on_receive;
+            };
 
         template < typename Event_type >
-            bool Lambda_filter< Event_type >::qualifies ( Event_type event )
-            {
-                return qualifies_function ( event );
-            }
+            Lambda_receiver < Event_type >::Lambda_receiver ( std::function < void ( Event_type ) > on_receive ) :
+                on_receive ( on_receive )
+            {}
 
         template < typename Event_type >
-            bool Lambda_filter< Event_type >::is_expired ()
+            void Lambda_receiver < Event_type >::receive ( Event_type event )
             {
-                return is_expired_function ();
+                on_receive ( event );
             }
-
     } /* namespace events */
 } /* namespace engine */
 
-#endif // ENGINE_EVENTS_LAMBDA_FILTER_GUARD
+#endif // ENGINE_EVENTS_LAMBDA_RECEIVER_GUARD

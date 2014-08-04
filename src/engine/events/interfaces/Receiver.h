@@ -19,32 +19,22 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef ENGINE_EVENTS_HUB_GUARD
-#define ENGINE_EVENTS_HUB_GUARD
-
-#include <memory>
-
-#include "Listener.h"
-#include "Filter.h"
+#ifndef ENGINE_EVENTS_RECEIVER_GUARD
+#define ENGINE_EVENTS_RECEIVER_GUARD
 
 namespace engine
 {
     namespace events
     {
         template < typename Event_type >
-            class Hub
+            class Receiver
             {
                 public:
-                    virtual ~Hub () = default;
+                    virtual void receive ( Event_type ) = 0;
 
-                    virtual void subscribe ( Listener< Event_type* >* listener, Filter< Event_type* >* filter ) = 0;
-                    virtual void unsubscribe ( Listener< Event_type* >* listener, Filter< Event_type* >* filter ) = 0;
-
-                    virtual void broadcast_event ( Event_type* event ) = 0;
-                    virtual void queue_event ( std::shared_ptr< Event_type > event ) = 0;
-                    virtual void flush_queue () = 0;
+                    virtual ~Receiver () = default;
             };
     } /* namespace events */
 } /* namespace engine */
 
-#endif // ENGINE_EVENTS_HUB_GUARD
+#endif // ENGINE_EVENTS_RECEIVER_GUARD

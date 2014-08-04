@@ -24,8 +24,9 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "engine/events/interfaces/Listener.h"
+#include "engine/events/interfaces/Receiver.h"
 #include "engine/gui/Draw_event.h"
 #include "engine/types/Dict.h"
 
@@ -33,15 +34,15 @@ namespace engine
 {
     namespace converters
     {
-        class Draw_event_to_dict : public events::Listener< std::shared_ptr < gui::Draw_event > >
+        class Draw_event_to_dict : public events::Receiver < std::shared_ptr < gui::Draw_event > >
         {
             public:
-                Draw_event_to_dict ( events::Listener< std::shared_ptr< types::Dict > >* listener );
+                Draw_event_to_dict ( events::Receiver < std::shared_ptr< types::Dict > >* receiver );
 
-                void handle_event ( std::shared_ptr < gui::Draw_event > draw_event );
+                virtual void receive ( std::shared_ptr < gui::Draw_event > draw_event );
 
             private:
-                events::Listener< std::shared_ptr< types::Dict > >* listener;
+                events::Receiver < std::shared_ptr < types::Dict > >* receiver;
         };
     } /* namespace converters */
 } /* namespace engine */

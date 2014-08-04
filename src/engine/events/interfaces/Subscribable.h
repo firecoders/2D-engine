@@ -19,42 +19,23 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef ENGINE_ADAPTERS_SHARED_TO_RAW_LISTENER_GUARD
-#define ENGINE_ADAPTERS_SHARED_TO_RAW_LISTENER_GUARD
-
-#include <memory>
-
-#include "engine/events/interfaces/Listener.h"
+#ifndef ENGINE_EVENTS_SUBSCRIBABLE_GUARD
+#define ENGINE_EVENTS_SUBSCRIBABLE_GUARD
 
 namespace engine
 {
-    namespace adapters
+    namespace events
     {
         template < typename Event_type >
-            class Shared_to_raw_listener : public events::Listener< std::shared_ptr< Event_type > >
-        {
-            public:
-                Shared_to_raw_listener ( events::Listener< Event_type* >* listener );
-
-                void handle_event ( std::shared_ptr< Event_type > event );
-
-            private:
-                events::Listener< Event_type* >* listener;
-        };
-
-        template < typename Event_type >
-            Shared_to_raw_listener< Event_type >::Shared_to_raw_listener ( events::Listener< Event_type* >* listener ) :
-                listener ( listener )
-        {}
-
-        template < typename Event_type >
-            void Shared_to_raw_listener< Event_type >::handle_event ( std::shared_ptr< Event_type > event )
+            class Subscribable
             {
-                listener->handle_event ( event.get () );
-            }
+                public:
+                    virtual void subscribe ( std::shared_ptr < Receiver < Event_type > > ) = 0;
+                    virtual void unsubscribe ( Receiver < Event_type >* ) = 0;
 
-
-    } /* namespace adapters */
+                    virtual ~Subscribable () = default;
+            };
+    } /* namespace events */
 } /* namespace engine */
 
-#endif // ENGINE_ADAPTERS_SHARED_TO_RAW_LISTENER_GUARD
+#endif // ENGINE_EVENTS_SUBSCRIBABLE_GUARD
