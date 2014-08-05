@@ -5,7 +5,6 @@ include_directories ( ${GTEST_INCLUDE_DIRS} )
 # Use files from tests
 file ( GLOB_RECURSE TEST_SRCS ${CMAKE_CURRENT_LIST_DIR} *.cpp )
 include_directories ( ${CMAKE_CURRENT_LIST_DIR} )
-include_directories ( ${CMAKE_CURRENT_LIST_DIR}/../src )
 
 # Create test executable
 add_executable ( test_executable ${TEST_SRCS} )

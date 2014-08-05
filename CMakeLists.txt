@@ -14,6 +14,9 @@ if ( CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG )
     list ( APPEND CMAKE_CXX_FLAGS "-std=c++11" )
 endif ( CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG )
 
+# Include headers from inc
+include_directories ( ${CMAKE_SOURCE_DIR}/inc )
+
 # Add the two subdirectories
 add_subdirectory ( ${CMAKE_SOURCE_DIR}/src )
 add_subdirectory ( ${CMAKE_SOURCE_DIR}/tests )
