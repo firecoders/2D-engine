@@ -29,15 +29,14 @@
 #include <mutex>
 #include <set>
 
-#include "interfaces/Receiver.h"
-#include "interfaces/Subscribable.h"
+#include "engine/events/interfaces/Node.h"
 
 namespace engine
 {
     namespace events
     {
         template < typename Event_type >
-            class Broadcaster : public Subscribable < Event_type >, public Receiver < Event_type >
+            class Broadcaster : public Node < Event_type >
             {
                 public:
                     Broadcaster ();
