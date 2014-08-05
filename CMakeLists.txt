@@ -20,3 +20,6 @@ include_directories ( ${CMAKE_SOURCE_DIR}/inc )
 # Add the two subdirectories
 add_subdirectory ( ${CMAKE_SOURCE_DIR}/src )
 add_subdirectory ( ${CMAKE_SOURCE_DIR}/tests )
+
+file ( GLOB_RECURSE 2D_ENGINE_HEADERS ${CMAKE_SOURCE_DIR}/inc *.(h|hpp) )
+install ( FILES ${2D_ENGINE_HEADERS} DESTINATION include )
