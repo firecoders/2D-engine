@@ -25,8 +25,7 @@
 #include <memory>
 #include <functional>
 
-#include "interfaces/Receiver.h"
-#include "interfaces/Subscribable.h"
+#include "engine/events/interfaces/Node.h"
 #include "Broadcaster.hpp"
 
 namespace engine
@@ -34,7 +33,7 @@ namespace engine
     namespace events
     {
         template < typename Event_type >
-            class Filter_node : public Subscribable < Event_type >, public Receiver < Event_type >
+            class Filter_node : public Node < Event_type >
             {
                 public:
                     Filter_node ( std::function < bool ( Event_type ) > qualifies );

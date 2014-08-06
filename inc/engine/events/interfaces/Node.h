@@ -19,9 +19,10 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#ifndef ENGINE_EVENTS_SUBSCRIBABLE_GUARD
-#define ENGINE_EVENTS_SUBSCRIBABLE_GUARD
+#ifndef ENGINE_EVENTS_NODE_GUARD
+#define ENGINE_EVENTS_NODE_GUARD
 
+#include "engine/events/interfaces/Subscribable.h"
 #include "engine/events/interfaces/Receiver.h"
 
 namespace engine
@@ -29,15 +30,14 @@ namespace engine
     namespace events
     {
         template < typename Event_type >
-            class Subscribable
+            class Node :
+                public Subscribable < Event_type >,
+                public Receiver < Event_type >
             {
                 public:
-                    virtual void subscribe ( std::shared_ptr < Receiver < Event_type > > ) = 0;
-                    virtual void unsubscribe ( Receiver < Event_type >* ) = 0;
-
-                    virtual ~Subscribable () = default;
+                    virtual ~Node () = default;
             };
     } /* namespace events */
 } /* namespace engine */
 
-#endif // ENGINE_EVENTS_SUBSCRIBABLE_GUARD
+#endif // ENGINE_EVENTS_NODE_GUARD
