@@ -19,7 +19,7 @@
    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
    OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-#include "Draw_event.h"
+#include "engine/gui/Draw_event.h"
 
 using namespace engine::gui;
 
