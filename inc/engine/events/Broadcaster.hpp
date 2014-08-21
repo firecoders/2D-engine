@@ -44,7 +44,7 @@ namespace engine
                     virtual void unsubscribe ( Receiver < Event_type >* unsubscriber );
                     virtual void receive ( Event_type event );
 
-                    virtual ~Broadcaster () = default;
+                    virtual ~Broadcaster () noexcept = default;
 
                 private:
                     void empty_queues ();
