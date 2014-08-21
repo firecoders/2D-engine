@@ -27,7 +27,7 @@
 #include <string>
 #include <memory>
 #include <iostream>
-#include <exception>
+#include <stdexcept>
 #include <utility>
 #include <iterator>
 #include <algorithm>
