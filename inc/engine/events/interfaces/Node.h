@@ -35,7 +35,7 @@ namespace engine
                 public Receiver < Event_type >
             {
                 public:
-                    virtual ~Node () = default;
+                    virtual ~Node () noexcept = default;
             };
     } /* namespace events */
 } /* namespace engine */

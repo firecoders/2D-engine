@@ -1,10 +1,10 @@
 #!/bin/bash
 
+# if any command fails, bash will exit with a non-zero exit code
+set -e
+
 case $1 in
     "setup")
-        cmake -H. -Bbuild
-        ;;
-    "rebuild")
         cmake -H. -Bbuild
         ;;
     "debug")
@@ -13,6 +13,9 @@ case $1 in
     "clean")
         echo "removing build/, lib2D-engine.a and test_executable"
         rm -rf build lib2D-engine.a test_executable
+        ;;
+    "test")
+        ./test_executable
         ;;
     *)
         make -C build $1

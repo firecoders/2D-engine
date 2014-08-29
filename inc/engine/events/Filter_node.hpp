@@ -42,7 +42,7 @@ namespace engine
                     virtual void unsubscribe ( Receiver < Event_type >* unsubscribe );
                     virtual void receive ( Event_type event );
 
-                    virtual ~Filter_node () = default;
+                    virtual ~Filter_node () noexcept {};
 
                 private:
                     std::function < bool ( Event_type ) > qualifies_function;

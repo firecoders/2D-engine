@@ -38,7 +38,7 @@ namespace engine
 
                     virtual void receive ( Event_type event );
 
-                    virtual ~Lambda_receiver () = default;
+                    virtual ~Lambda_receiver () noexcept {};
                 private:
                     std::function < void ( Event_type ) > on_receive;
             };
